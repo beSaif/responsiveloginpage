@@ -14,9 +14,9 @@ class _SignUpPageState extends State<SignUpPage> {
   final formKey = GlobalKey<FormState>();
   bool saveAttempted = false;
 
-  void _createUser({String email, String pw}) {
+  void _createUser({String email, String password}) {
     _auth
-        .createUserWithEmailAndPassword(email: email, password: pw)
+        .createUserWithEmailAndPassword(email: email, password: password)
         .then((authResult) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
         return Container(
@@ -151,11 +151,11 @@ class _SignUpPageState extends State<SignUpPage> {
                         password = textValue;
                       });
                     },
-                    validator: (pwValue) {
-                      if (pwValue.isEmpty) {
+                    validator: (passwordValue) {
+                      if (passwordValue.isEmpty) {
                         return 'This field is mandatory.';
                       }
-                      if (pwValue.length < 8) {
+                      if (passwordValue.length < 8) {
                         return 'Password must be atleast 8 characters';
                       }
                       return null;
@@ -201,7 +201,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       });
                       if (formKey.currentState.validate()) {
                         formKey.currentState.save();
-                        _createUser(email: email, pw: password);
+                        _createUser(email: email, password: password);
                       }
                     },
                     child: Container(
