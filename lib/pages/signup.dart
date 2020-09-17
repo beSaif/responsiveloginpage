@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:loginpage/pages/forms/loginForm.dart';
 import 'package:loginpage/size_config.dart';
 import 'forms/signupForm.dart';
 
@@ -12,58 +14,64 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       resizeToAvoidBottomPadding: false,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            child: Stack(
-              children: [
-                Container(
-                  padding: EdgeInsets.fromLTRB(
-                      SizeConfig.blockSizeHorizontal * 7,
-                      SizeConfig.blockSizeVertical * 10,
-                      0,
-                      0),
-                  child: Text(
-                    'create',
-                    style: TextStyle(
-                        fontSize: SizeConfig.blockSizeHorizontal * 15.3,
-                        fontWeight: FontWeight.w100),
+      body: Builder(builder: (context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                  SizeConfig.blockSizeHorizontal * 7,
+                  SizeConfig.blockSizeVertical * 0,
+                  SizeConfig.blockSizeHorizontal * 7,
+                  0),
+              child: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.fromLTRB(
+                        0, SizeConfig.blockSizeVertical * 0, 0, 0),
+                    child: Text(
+                      'create',
+                      style: TextStyle(
+                          fontSize: SizeConfig.blockSizeHorizontal * 11,
+                          fontWeight: FontWeight.w100),
+                    ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(
-                      SizeConfig.blockSizeHorizontal * 7,
-                      SizeConfig.blockSizeVertical * 18,
-                      0,
-                      0),
-                  child: Text(
-                    'Account',
-                    style: TextStyle(
-                        fontSize: SizeConfig.blockSizeHorizontal * 17,
-                        fontWeight: FontWeight.bold),
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.fromLTRB(
+                            0, SizeConfig.blockSizeVertical * 0, 0, 0),
+                        child: Text(
+                          'Account',
+                          style: TextStyle(
+                              fontSize: SizeConfig.blockSizeHorizontal * 14,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(height: SizeConfig.screenHeight * 0.19),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(
+                            SizeConfig.blockSizeHorizontal * 0,
+                            SizeConfig.blockSizeVertical * 0,
+                            0,
+                            0),
+                        child: Text(
+                          '.',
+                          style: TextStyle(
+                              fontSize: SizeConfig.blockSizeHorizontal * 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(
-                      SizeConfig.blockSizeHorizontal * 71,
-                      SizeConfig.blockSizeVertical * 16,
-                      0,
-                      0),
-                  child: Text(
-                    '.',
-                    style: TextStyle(
-                        fontSize: SizeConfig.blockSizeHorizontal * 21,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SignUpForm(),
-        ],
-      ),
+                  SignUpForm(),
+                ],
+              ),
+            )
+          ],
+        );
+      }),
     );
   }
 }

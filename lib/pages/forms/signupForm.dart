@@ -49,12 +49,10 @@ class _SignUpFormState extends State<SignUpForm> {
     return Form(
       key: formKey,
       child: Container(
-        padding: EdgeInsets.only(
-            top: SizeConfig.blockSizeVertical * 1,
-            left: SizeConfig.blockSizeHorizontal * 7,
-            right: SizeConfig.blockSizeHorizontal * 7),
+        padding: EdgeInsets.only(top: SizeConfig.blockSizeVertical * 0),
         child: Column(
           children: [
+            SizedBox(height: SizeConfig.screenHeight * 0.12),
             TextFormField(
               autovalidate: saveAttempted,
               onChanged: (textValue) {

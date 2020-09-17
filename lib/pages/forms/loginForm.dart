@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:loginpage/pages/phoneAuthPage.dart';
 import 'package:loginpage/size_config.dart';
 
 class LogInForm extends StatefulWidget {
@@ -168,7 +169,8 @@ class _LogInFormState extends State<LogInForm> {
             SizedBox(height: SizeConfig.blockSizeVertical * 2.5),
             InkWell(
               onTap: () {
-                Navigator.of(context).pushNamed('/PhoneAuthPage');
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PhoneAuthPage()));
               },
               child: Container(
                 height: SizeConfig.blockSizeVertical * 5.2,
