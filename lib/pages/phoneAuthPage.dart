@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loginpage/pages/forms/loginForm.dart';
@@ -13,7 +14,96 @@ class PhoneAuthPage extends StatefulWidget {
 }
 
 class _PhoneAuthPageState extends State<PhoneAuthPage> {
-  TextEditingController phoneController = TextEditingController();
+  String phoneNumber;
+  String verficationCode;
+  final _formKeyPhone = GlobalKey<FormState>();
+  bool saveAttempted = false;
+
+  TextEditingController codeController;
+  TextEditingController phoneController;
+  String verificationId;
+
+  Future<bool> loginUser(phoneNumber, BuildContext context) async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
+
+    _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        timeout: Duration(seconds: 60),
+        verificationCompleted: (AuthCredential credential) async {
+          Navigator.of(context).pop();
+          UserCredential result = await _auth.signInWithCredential(credential);
+          User user = result.user;
+          if (user != null) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) {
+              return Container(
+                color: Colors.yellow,
+                child: Text('Welcome ${user.phoneNumber}'),
+              );
+            }));
+          }
+        },
+        verificationFailed: (FirebaseAuthException exception) {
+          // ignore: unnecessary_brace_in_string_interps
+          print('Failed + ${exception}');
+        },
+        codeSent: (verificationId, [int forceResendingToker]) {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Enter the code'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: codeController,
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    FlatButton(
+                        onPressed: () async {
+                          AuthCredential credential =
+                              PhoneAuthProvider.getCredential(
+                                  verificationId: verificationId,
+                                  smsCode: codeController.text);
+                          UserCredential result =
+                              await _auth.signInWithCredential(credential);
+                          User user = result.user;
+                          if (user != null) {
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: (context) {
+                              return Container(
+                                color: Colors.yellow,
+                                child: Text('Welcome ${user.phoneNumber}'),
+                              );
+                            }));
+                          } else {
+                            print('error');
+                          }
+                        },
+                        child: Text('Confirm'))
+                  ],
+                );
+              });
+        },
+        codeAutoRetrievalTimeout: (verificationId) {});
+  }
+
+  _onClear() {
+    setState(() {
+      phoneController = TextEditingController(text: '');
+      phoneNumber = '';
+    });
+  }
+
+  @override
+  void initState() {
+    phoneController = TextEditingController(text: '+91');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,18 +203,32 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                         margin:
                             EdgeInsets.all(SizeConfig.blockSizeHorizontal * 4),
                         constraints: const BoxConstraints(maxWidth: 500),
-                        child: CupertinoTextField(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white),
-                              color: Colors.white,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(10))),
-                          controller: phoneController,
-                          clearButtonMode: OverlayVisibilityMode.editing,
-                          keyboardType: TextInputType.phone,
-                          maxLines: 1,
-                          placeholder: '+33...',
+                        child: Form(
+                          key: _formKeyPhone,
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: TextFormField(
+                              onSaved: (value) => phoneNumber = value,
+                              autovalidate: saveAttempted,
+                              validator: (value) {
+                                if (value.length != 13) {
+                                  return 'Please enter a valid phone number.';
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.numberWithOptions(),
+                              controller: phoneController,
+                              decoration: InputDecoration(
+                                  hintText: '+91...',
+                                  hoverColor: Colors.white,
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.white)),
+                                  suffix: IconButton(
+                                      icon: Icon(Icons.cancel),
+                                      onPressed: _onClear)),
+                            ),
+                          ),
                         ),
                       ),
                       Container(
@@ -134,7 +238,17 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                             horizontal: 20, vertical: 10),
                         constraints: const BoxConstraints(maxWidth: 500),
                         child: RaisedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (_formKeyPhone.currentState.validate()) {
+                              _formKeyPhone.currentState.save();
+                            }
+                            setState(() {
+                              saveAttempted = true;
+                              phoneNumber = phoneController.text.trim();
+                              print(phoneNumber);
+                              loginUser(phoneNumber, context);
+                            });
+                          },
                           color: Colors.green,
                           shape: const RoundedRectangleBorder(
                               borderRadius:

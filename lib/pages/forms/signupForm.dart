@@ -54,6 +54,7 @@ class _SignUpFormState extends State<SignUpForm> {
           children: [
             SizedBox(height: SizeConfig.screenHeight * 0.12),
             TextFormField(
+              keyboardType: TextInputType.emailAddress,
               autovalidate: saveAttempted,
               onChanged: (textValue) {
                 setState(() {
@@ -91,6 +92,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       borderSide: BorderSide(color: Colors.green))),
             ),
             TextFormField(
+              obscureText: true,
               autovalidate: saveAttempted,
               onChanged: (textValue) {
                 setState(() {
@@ -116,6 +118,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       borderSide: BorderSide(color: Colors.green))),
             ),
             TextFormField(
+              obscureText: true,
               autovalidate: saveAttempted,
               onChanged: (textValue) {
                 setState(() {

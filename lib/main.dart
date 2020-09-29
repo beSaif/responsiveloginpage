@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
         '/signup': (BuildContext context) => new SignUpPage(),
-        '/PhoneAuthPage': (BuildContext context) => new PhoneAuthPage(),
       },
       home: new MyHomePage(),
     );

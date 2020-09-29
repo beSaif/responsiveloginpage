@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loginpage/pages/phoneAuthPage.dart';
 import 'package:loginpage/size_config.dart';
 
+import '../phoneAuthPage.dart';
+
 class LogInForm extends StatefulWidget {
   @override
   _LogInFormState createState() => _LogInFormState();
@@ -51,6 +53,7 @@ class _LogInFormState extends State<LogInForm> {
         child: Column(
           children: [
             TextFormField(
+              keyboardType: TextInputType.emailAddress,
               autovalidate: saveAttempted,
               onChanged: (textValue) {
                 setState(() {
@@ -88,6 +91,7 @@ class _LogInFormState extends State<LogInForm> {
                       borderSide: BorderSide(color: Colors.green))),
             ),
             TextFormField(
+              obscureText: true,
               autovalidate: saveAttempted,
               onChanged: (textValue) {
                 setState(() {
