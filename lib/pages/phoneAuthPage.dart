@@ -1,10 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:loginpage/pages/forms/loginForm.dart';
-import 'package:mobx/mobx.dart';
-import 'package:provider/provider.dart';
-
+import 'package:loginpage/pages/homePage.dart';
 import '../size_config.dart';
 
 class PhoneAuthPage extends StatefulWidget {
@@ -18,11 +15,14 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
   String verficationCode;
   final _formKeyPhone = GlobalKey<FormState>();
   bool saveAttempted = false;
+  String otpcode;
 
-  TextEditingController codeController;
+  TextEditingController
+      codeController; // codecontroller:smscode fix. not printing and all
   TextEditingController phoneController;
   String verificationId;
 
+  // ignore: missing_return
   Future<bool> loginUser(phoneNumber, BuildContext context) async {
     FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -35,12 +35,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
           User user = result.user;
           if (user != null) {
             Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) {
-              return Container(
-                color: Colors.yellow,
-                child: Text('Welcome ${user.phoneNumber}'),
-              );
-            }));
+                MaterialPageRoute(builder: (context) => HomePage(user: user)));
           }
         },
         verificationFailed: (FirebaseAuthException exception) {
@@ -57,7 +52,12 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextField(
+                      TextFormField(
+                        onChanged: (value) {
+                          otpcode = value;
+                          print(otpcode);
+                        },
+                        keyboardType: TextInputType.number,
                         controller: codeController,
                       ),
                     ],
@@ -66,20 +66,18 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                     FlatButton(
                         onPressed: () async {
                           AuthCredential credential =
-                              PhoneAuthProvider.getCredential(
+                              PhoneAuthProvider.credential(
                                   verificationId: verificationId,
-                                  smsCode: codeController.text);
+                                  smsCode: otpcode);
                           UserCredential result =
                               await _auth.signInWithCredential(credential);
                           User user = result.user;
                           if (user != null) {
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) {
-                              return Container(
-                                color: Colors.yellow,
-                                child: Text('Welcome ${user.phoneNumber}'),
-                              );
-                            }));
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        HomePage(user: user)));
                           } else {
                             print('error');
                           }
@@ -216,7 +214,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                                 }
                                 return null;
                               },
-                              keyboardType: TextInputType.numberWithOptions(),
+                              keyboardType: TextInputType.number,
                               controller: phoneController,
                               decoration: InputDecoration(
                                   hintText: '+91...',
