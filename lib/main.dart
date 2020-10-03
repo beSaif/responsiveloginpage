@@ -23,12 +23,12 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
-        '/signup': (BuildContext context) => new SignUpPage(),
+        '/signup': (BuildContext context) => SignUpPage(),
       },
-      home: new MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }

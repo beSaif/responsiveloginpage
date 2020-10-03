@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loginpage/pages/phoneAuthPage.dart';
 import 'package:loginpage/size_config.dart';
+import '../homePage.dart';
 
 import '../phoneAuthPage.dart';
 
@@ -21,12 +22,9 @@ class _LogInFormState extends State<LogInForm> {
     _auth
         .signInWithEmailAndPassword(email: email, password: password)
         .then((authResult) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return Container(
-          color: Colors.yellow,
-          child: Text('Welcome ${authResult.user.email}'),
-        );
-      }));
+      User user = authResult.user;
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => HomePage(user: user)));
     }).catchError((err) {
       print(err.code);
       if (err.message != 'Given String is empty or null') {
