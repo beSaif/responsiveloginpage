@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loginpage/pages/funds.dart';
-import 'package:loginpage/pages/homePage.dart';
-import '../size_config.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomePage extends StatefulWidget {
   User user;
@@ -15,7 +15,37 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool loadingscreen = false;
   User user;
+
+  // firebase section.
+  Map coinPriceLive = {
+    "lastPrice": 0,
+    "currentPrice": 0
+  }; //! sample data illank app crash aaan
+  void getCoinPrice() async {
+    CollectionReference coinPriceRef = FirebaseFirestore.instance
+        .collection("coinPrice"); // firebase storeage location
+    // fetching coin price
+    await coinPriceRef.get().then((QuerySnapshot querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+                setState(() {
+                  coinPriceLive =
+                      doc.data(); //finds the value and stores in the variable
+                }),
+              }),
+          print(coinPriceLive)
+        });
+  }
+
+  
+
+  @override
+  void initState() {
+    getCoinPrice(); // auto fetching for the first time
+    super.initState();
+  }
+
   _HomePageState(this.user);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,8 +59,10 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {},
+            icon: Icon(Icons.refresh),
+            onPressed: () {
+              getCoinPrice();
+            },
           ),
         ],
         elevation: 0,
@@ -100,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                               padding: EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 4),
                               child: Text(
-                                "+3.56 %",
+                                "%", //TODO saipudeene unfortunately nan mathil weak idh ni setting aaaiko ==> ${(((coinPriceLive["lastPrice"] - coinPriceLive["currentPrice"]) / coinPriceLive["currentPrice"]) * 100).toString()}
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.white,
@@ -120,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '15.65 RC ',
+                              ' ${coinPriceLive["currentPrice"].toString()} RC',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
