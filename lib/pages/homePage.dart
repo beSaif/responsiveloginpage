@@ -32,15 +32,45 @@ class _HomePageState extends State<HomePage> {
                       doc.data(); //finds the value and stores in the variable
                 }),
               }),
-          print(coinPriceLive)
+          //print(coinPriceLive)
         });
   }
 
-  
+  Map currentUser = {
+    "name": " ",
+    "number": 0,
+    "RC": 0,
+    "walletBalance": 0
+  }; //! basic templaet illank app crash aaan for some reason
+  //fetching userDetainls
+  void getCurrentUser(String uid) async {
+    CollectionReference userRef = FirebaseFirestore.instance
+        .collection("users"); // firebase location of users
+    userRef.doc(uid).get().then((DocumentSnapshot documentSnapshot) {
+      // fetching the user by his uid or her(NO RACISM INTENDED)
+      if (documentSnapshot.exists) {
+        //print('user found: ${documentSnapshot.data()}');
+        setState(() {
+          currentUser = documentSnapshot.data();
+        });
+      } else {
+        print('no user found, don\'t worry machane we can create');
+        // creating the new user for the database with his uid
+        userRef.doc(uid).set({
+          "name": " ",
+          "number": 0,
+          "RC": 0,
+          "walletBalance": 0,
+          "uid": "${uid}"
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
     getCoinPrice(); // auto fetching for the first time
+    getCurrentUser(user.uid);
     super.initState();
   }
 
@@ -62,6 +92,7 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.refresh),
             onPressed: () {
               getCoinPrice();
+              getCurrentUser(user.uid);
             },
           ),
         ],
@@ -119,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '₹32,549',
+                              '₹${currentUser["walletBalance"].toString()}', // taking elements from the current user map
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 40,
@@ -159,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '${user.phoneNumber}',
+                              '+91 ${currentUser["number"]}',
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16),
                             ),
