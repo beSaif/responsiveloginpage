@@ -6,17 +6,11 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class FundsPage extends StatefulWidget {
-  Map currentUser;
-
-  FundsPage({Key key, @required this.currentUser}) : super(key: key);
   @override
-  _FundsPageState createState() => _FundsPageState(currentUser);
+  _FundsPageState createState() => _FundsPageState();
 }
 
 class _FundsPageState extends State<FundsPage> {
-  Map currentUser;
-  _FundsPageState(this.currentUser);
-
   // rabeeh's section for razorpay integration.
   Razorpay razorpay;
   TextEditingController textEditingController = new TextEditingController();
