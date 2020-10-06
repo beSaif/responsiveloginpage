@@ -82,6 +82,13 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  double coinPercentageColor() {
+    int currentPrice = coinPriceLive["currentPrice"];
+    int lastPrice = coinPriceLive["lastPrice"];
+    double percentage = ((currentPrice - lastPrice) / lastPrice) * 100;
+    return percentage;
+  }
+
   @override
   void initState() {
     getCoinPrice(); // auto fetching for the first time
@@ -145,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Current Balance',
+                              'Holdings Value',
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16),
                             ),
@@ -165,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '₹${currentUser["walletBalance"].toString()}', // taking elements from the current user map
+                              '₹${coinPriceLive["currentPrice"] * currentUser["RC"]}', // taking elements from the current user map
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 40,
@@ -173,7 +180,9 @@ class _HomePageState extends State<HomePage> {
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                  color: Color(0xFF2ECC71),
+                                  color: coinPercentageColor() > 0
+                                      ? Color(0xFF2ECC71)
+                                      : Color(0xFFdf514d),
                                   borderRadius: BorderRadius.circular(20)),
                               padding: EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 4),
@@ -198,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              ' ${coinPriceLive["currentPrice"].toString()} RC',
+                              ' ${currentUser["RC"].toString()} RC',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,

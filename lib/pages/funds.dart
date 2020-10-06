@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:loginpage/size_config.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -5,14 +6,21 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class FundsPage extends StatefulWidget {
+  Map currentUser;
+
+  FundsPage({Key key, @required this.currentUser}) : super(key: key);
   @override
-  _FundsPageState createState() => _FundsPageState();
+  _FundsPageState createState() => _FundsPageState(currentUser);
 }
 
 class _FundsPageState extends State<FundsPage> {
+  Map currentUser;
+  _FundsPageState(this.currentUser);
+
   // rabeeh's section for razorpay integration.
   Razorpay razorpay;
   TextEditingController textEditingController = new TextEditingController();
+//  _FundsPageState(this.currentUser);
 
   @override
   void initState() {
@@ -144,7 +152,7 @@ class _FundsPageState extends State<FundsPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                '₹9483.20',
+                                '₹}', //add currentUser['walletBalance']
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 40,

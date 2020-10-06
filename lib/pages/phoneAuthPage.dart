@@ -92,7 +92,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
 
   _onClear() {
     setState(() {
-      phoneController = TextEditingController(text: '');
+      phoneController = TextEditingController(text: '+91');
       phoneNumber = '';
     });
   }
