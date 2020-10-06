@@ -58,13 +58,28 @@ class _HomePageState extends State<HomePage> {
         // creating the new user for the database with his uid
         userRef.doc(uid).set({
           "name": " ",
-          "number": 0,
+          "number": user.phoneNumber,
           "RC": 0,
           "walletBalance": 0,
           "uid": "${uid}"
         });
       }
     });
+  }
+
+  //coin percentage calculator
+  String coinPercentage() {
+    int currentPrice = coinPriceLive["currentPrice"];
+    int lastPrice = coinPriceLive["lastPrice"];
+    double percentage = ((currentPrice - lastPrice) / lastPrice) * 100;
+    String returnValue;
+    if (percentage > 0) {
+      returnValue = "+" + percentage.toStringAsFixed(2);
+      return returnValue;
+    } else {
+      returnValue = percentage.toStringAsFixed(2);
+      return returnValue;
+    }
   }
 
   @override
@@ -163,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                               padding: EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 4),
                               child: Text(
-                                "%", //TODO saipudeene unfortunately nan mathil weak idh ni setting aaaiko ==> ${(((coinPriceLive["lastPrice"] - coinPriceLive["currentPrice"]) / coinPriceLive["currentPrice"]) * 100).toString()}
+                                "${coinPercentage()}%",
                                 style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.white,
@@ -190,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '+91 ${currentUser["number"]}',
+                              '${currentUser["number"].toString()}',
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16),
                             ),
