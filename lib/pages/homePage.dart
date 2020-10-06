@@ -40,16 +40,17 @@ class _HomePageState extends State<HomePage> {
     "name": " ",
     "number": 0,
     "RC": 0,
-    "walletBalance": 0
+    "walletBalance": 0,
+    "walletHistory": [],
+    "coinHistory": []
   }; //! basic templaet illank app crash aaan for some reason
   //fetching userDetainls
   void getCurrentUser(String uid) async {
     CollectionReference userRef = FirebaseFirestore.instance
         .collection("users"); // firebase location of users
     userRef.doc(uid).get().then((DocumentSnapshot documentSnapshot) {
-      // fetching the user by his uid or her(NO RACISM INTENDED)
       if (documentSnapshot.exists) {
-        //print('user found: ${documentSnapshot.data()}');
+        print('user found: ${documentSnapshot.data()}');
         setState(() {
           currentUser = documentSnapshot.data();
         });
@@ -61,7 +62,9 @@ class _HomePageState extends State<HomePage> {
           "number": user.phoneNumber,
           "RC": 0,
           "walletBalance": 0,
-          "uid": "${uid}"
+          "uid": "${uid}",
+          "walletHistory": [],
+          "coinHistory": []
         });
       }
     });
@@ -82,6 +85,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // coin % card background color
   double coinPercentageColor() {
     int currentPrice = coinPriceLive["currentPrice"];
     int lastPrice = coinPriceLive["lastPrice"];
@@ -92,7 +96,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     getCoinPrice(); // auto fetching for the first time
-    getCurrentUser(user.uid);
+    getCurrentUser(user.uid); //auto fetching the user
     super.initState();
   }
 
@@ -106,7 +110,9 @@ class _HomePageState extends State<HomePage> {
           icon: Icon(Icons.account_balance_wallet),
           onPressed: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => FundsPage()));
+                context,
+                MaterialPageRoute(
+                    builder: (context) => FundsPage(currentUser: currentUser)));
           },
         ),
         actions: [

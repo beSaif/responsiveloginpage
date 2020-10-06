@@ -4,18 +4,21 @@ import 'package:loginpage/size_config.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FundsPage extends StatefulWidget {
+  final Map currentUser;
+  FundsPage({Key key, this.currentUser}) : super(key: key);
   @override
   _FundsPageState createState() => _FundsPageState();
 }
 
 class _FundsPageState extends State<FundsPage> {
+  TextEditingController textEditingController =
+      new TextEditingController(); //text controller for getting the amount
+
   // rabeeh's section for razorpay integration.
   Razorpay razorpay;
-  TextEditingController textEditingController = new TextEditingController();
-//  _FundsPageState(this.currentUser);
-
   @override
   void initState() {
     razorpay = new Razorpay();
@@ -60,6 +63,8 @@ class _FundsPageState extends State<FundsPage> {
   // functions for checking the payment states
   void handlerPaymentSuccess(PaymentSuccessResponse response) {
     print("Pament success");
+    updateWallet(num.parse(textEditingController
+        .text)); // passing the amount to get updated in the firestore
     Toast.show(
       //will show a small feedback to user about the payment
       "Pament Success",
@@ -82,6 +87,25 @@ class _FundsPageState extends State<FundsPage> {
     print("Pament Wallet");
     Toast.show("Payment External Wallet", context,
         duration: Toast.LENGTH_LONG, backgroundColor: Colors.blue[200]);
+  }
+
+  //firebase funtion to update wallet
+  void updateWallet(int amount) {
+    print('updating wallet of ${widget.currentUser["uid"].toString()}');
+    int updatedAmount = widget.currentUser["walletBalance"] +
+        amount; // calculating the amount to update
+    widget.currentUser["walletBalance"] = updatedAmount;
+    Map updateWalletHistory = {
+      "time": DateTime.now(),
+      "amount": num.parse(textEditingController.text),
+      "type": "payment"
+    };
+    CollectionReference userRef =
+        FirebaseFirestore.instance.collection("users");
+    userRef.doc(widget.currentUser["uid"]).update({
+      "walletBalance": updatedAmount,
+      "walletHistory": FieldValue.arrayUnion([updateWalletHistory])
+    });
   }
 
   @override
@@ -146,7 +170,7 @@ class _FundsPageState extends State<FundsPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                '₹}', //add currentUser['walletBalance']
+                                '₹${widget.currentUser['walletBalance'].toString()}', //add currentUser['walletBalance']
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 40,
