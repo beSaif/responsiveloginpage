@@ -26,7 +26,7 @@ class _LogInPageState extends State<LogInPage> {
                 children: [
                   Container(
                     child: Text(
-                      'hello',
+                      'Rich',
                       style: TextStyle(
                           fontSize: SizeConfig.blockSizeHorizontal * 15,
                           fontWeight: FontWeight.w100),
@@ -38,7 +38,7 @@ class _LogInPageState extends State<LogInPage> {
                         padding: EdgeInsets.fromLTRB(
                             0, SizeConfig.blockSizeVertical * 7, 0, 0),
                         child: Text(
-                          'there',
+                          'Coin',
                           style: TextStyle(
                               fontSize: SizeConfig.blockSizeHorizontal * 20,
                               fontWeight: FontWeight.bold),
@@ -55,7 +55,7 @@ class _LogInPageState extends State<LogInPage> {
                           style: TextStyle(
                               fontSize: SizeConfig.blockSizeHorizontal * 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.green),
+                              color: Color(0xFF0B3954)),
                         ),
                       ),
                     ],
