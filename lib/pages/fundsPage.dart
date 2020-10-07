@@ -317,7 +317,25 @@ class _FundsPageState extends State<FundsPage> {
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     alignment: Alignment.topLeft,
                     child: Container(
-                        child: WalletHistory(currentUser: widget.currentUser)),
+                        child: (() {
+                      if (widget.currentUser['walletHistory'].length == 0) {
+                        return Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.only(
+                              top: SizeConfig.blockSizeVertical * 13),
+                          child: Text(
+                            'No transaction has been done.',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.w100,
+                            ),
+                          ),
+                        );
+                      } else {
+                        return WalletHistory(currentUser: widget.currentUser);
+                      }
+                    }())),
                   ),
                 ],
               ),
