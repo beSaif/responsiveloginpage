@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loginpage/pages/homePage.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import '../size_config.dart';
 
 class PhoneAuthPage extends StatefulWidget {
@@ -43,49 +44,46 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
           print('Failed + ${exception}');
         },
         codeSent: (verificationId, [int forceResendingToker]) {
-          showDialog(
+          // popup for entering the amount
+          Alert(
               context: context,
-              barrierDismissible: false,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text('Enter the code'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextFormField(
-                        onChanged: (value) {
-                          otpcode = value;
-                          print(otpcode);
-                        },
-                        keyboardType: TextInputType.number,
-                        controller: codeController,
-                      ),
-                    ],
+              title: "OTP",
+              content: Column(
+                children: <Widget>[
+                  TextField(
+                    onChanged: (value) {
+                      otpcode = value;
+                      print(otpcode);
+                    },
+                    keyboardType: TextInputType.number,
+                    controller: codeController,
                   ),
-                  actions: [
-                    FlatButton(
-                        onPressed: () async {
-                          AuthCredential credential =
-                              PhoneAuthProvider.credential(
-                                  verificationId: verificationId,
-                                  smsCode: otpcode);
-                          UserCredential result =
-                              await _auth.signInWithCredential(credential);
-                          User user = result.user;
-                          if (user != null) {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        HomePage(user: user)));
-                          } else {
-                            print('error');
-                          }
-                        },
-                        child: Text('Confirm'))
-                  ],
-                );
-              });
+                ],
+              ),
+              buttons: [
+                DialogButton(
+                  color: Color(0xFF0B3954),
+                  onPressed: () async {
+                    AuthCredential credential = PhoneAuthProvider.credential(
+                        verificationId: verificationId, smsCode: otpcode);
+                    UserCredential result =
+                        await _auth.signInWithCredential(credential);
+                    User user = result.user;
+                    if (user != null) {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage(user: user)));
+                    } else {
+                      print('error');
+                    }
+                  },
+                  child: Text(
+                    "Confirm",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                )
+              ]).show();
         },
         codeAutoRetrievalTimeout: (verificationId) {});
   }
