@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loginpage/pages/forms/coinHistory.dart';
 import 'package:loginpage/pages/fundsPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loginpage/pages/login.dart';
+import 'package:loginpage/size_config.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
@@ -235,9 +237,10 @@ class _HomePageState extends State<HomePage> {
         ),
         automaticallyImplyLeading: false,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFf8f8ff), //change this
       body: Container(
         color: Color(0xFFf8f8ff),
+        height: double.infinity,
         padding: EdgeInsets.only(bottom: 00),
         width: MediaQuery.of(context).size.width,
         child: SingleChildScrollView(
@@ -340,6 +343,31 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Container(
+                margin:
+                    EdgeInsets.only(right: 20, left: 20, bottom: 0, top: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Today's Price : ",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: "Montserrat"),
+                    ),
+                    Text(
+                      '₹${coinPriceLive["currentPrice"]}',
+                      style: TextStyle(
+                          color: Color(0xFF0B3954),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Montserrat"),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
                 margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -392,91 +420,25 @@ class _HomePageState extends State<HomePage> {
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 alignment: Alignment.topLeft,
                 child: Container(
-                  child: ListView.builder(
-                      itemCount: 5,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: EdgeInsets.only(bottom: 13),
-                          height: 76,
-                          padding: EdgeInsets.only(
-                              left: 24, top: 12, bottom: 12, right: 22),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Color(0xFFdfdfe5),
-                                    blurRadius: 10,
-                                    spreadRadius: 5,
-                                    offset: Offset(8, 8))
-                              ]),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    height: 57,
-                                    width: 57,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Color(0xFF4185f4)),
-                                    child: Text(
-                                      'B',
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 13,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "5 RC",
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontFamily: 'Montserrat',
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Text(
-                                        '13-08-2020',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontFamily: 'Montserrat',
-                                          color: Colors.grey[10],
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    '₹500',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontFamily: 'Montserrat',
-                                      color: Color(0xFF0B3954),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        );
-                      }),
-                ),
+                    child: (() {
+                  if (currentUser['coinHistory'].length == 0) {
+                    return Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.only(
+                          top: SizeConfig.blockSizeVertical * 10),
+                      child: Text(
+                        'No transaction has been done.',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.w100,
+                        ),
+                      ),
+                    );
+                  } else {
+                    return CoinHistory(currentUser: currentUser);
+                  }
+                }())),
               )
             ],
           ),
