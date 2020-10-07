@@ -93,43 +93,111 @@ class _HomePageState extends State<HomePage> {
   // COIN SECTION BUY AND SELL
 
   Future coinTransactionPopup(String type) {
-    String feedback = "enter number of coins";
+    String feedback = "Enter quantity.";
     return Alert(
         context: context,
-        title: " ${type} Coin",
+        title: " $type COIN",
         content: Column(
           children: <Widget>[
-            TextField(
-              controller: coinNumberController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                icon: Icon(Icons.monetization_on),
-                labelText: feedback,
+            Container(
+              child: TextField(
+                controller: coinNumberController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.monetization_on),
+                  labelText: feedback,
+                ),
               ),
+            ),
+            SizedBox(
+              height: 10,
             ),
           ],
         ),
         buttons: [
           DialogButton(
-            onPressed: () => {
-              // cheking if there is balance
-              if (currentUser["walletBalance"] >
-                  (num.parse(coinNumberController.text) *
-                      coinPriceLive["currentPrice"]))
-                {
-                  coinTransaction(num.parse(coinNumberController.text), type),
-                  Navigator.pop(context)
-                }
-              else
-                {
-                  setState(() {
-                    feedback = "no money in wallet";
-                  })
-                },
+            onPressed: () {
+              int quantity = int.parse(
+                  coinNumberController.text); //To convert string to int.
+              int totalPrice = quantity * coinPriceLive["currentPrice"];
+              Navigator.pop(context); //pops previous dialogue
+              return Alert(
+                  context: context,
+                  title: 'ORDER CONFIRMATION',
+                  content: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Quantity: ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: "Montserrat"),
+                              ),
+                              Text(
+                                'Total: ',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: "Montserrat"),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                quantity.toString(),
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: "Montserrat"),
+                              ),
+                              Text(
+                                "₹${totalPrice.toString()}",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: "Montserrat"),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  buttons: [
+                    DialogButton(
+                        child: Text(
+                          type,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.w500),
+                        ),
+                        onPressed: null)
+                  ]).show();
             },
             child: Text(
-              type,
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              "NEXT",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.w500),
             ),
           )
         ]).show();
