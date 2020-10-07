@@ -27,8 +27,8 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
       barrierDismissible: loadingState,
       context: context,
       builder: (BuildContext context) {
-        return SpinKitWave(
-          color: Color(0xFF0B3954),
+        return SpinKitFadingFour(
+          color: Color(0xFFf1c40f),
           size: 50.0,
         );
       },
@@ -75,11 +75,18 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                     keyboardType: TextInputType.number,
                     controller: codeController,
                   ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Please wait while we send OTP.',
+                    style: TextStyle(fontSize: 11),
+                  ),
                 ],
               ),
               buttons: [
                 DialogButton(
-                  color: Color(0xFF0B3954),
+                  color: Color(0xFFf1c40f),
                   onPressed: () async {
                     openLoadingDialoge(); // open loading
                     AuthCredential credential = PhoneAuthProvider.credential(

@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:loginpage/pages/funds.dart';
+import 'package:loginpage/pages/fundsPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:loginpage/pages/login.dart';
 
 class HomePage extends StatefulWidget {
   User user;
@@ -104,6 +105,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //TODO: WillPopScope widget to block android back button
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -121,6 +123,14 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               getCoinPrice();
               getCurrentUser(user.uid);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => LogInPage()));
             },
           ),
         ],
