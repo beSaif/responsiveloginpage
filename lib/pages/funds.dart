@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:loginpage/pages/forms/walletHistory.dart';
 import 'package:loginpage/size_config.dart';
-import 'package:mobx/mobx.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
@@ -237,6 +236,7 @@ class _FundsPageState extends State<FundsPage> {
                                     children: <Widget>[
                                       TextField(
                                         controller: textEditingController,
+                                        keyboardType: TextInputType.number,
                                         decoration: InputDecoration(
                                           icon: Text("\u20B9"),
                                           labelText: 'Amount',
