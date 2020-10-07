@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../funds.dart';
 
 class WalletHistory extends StatefulWidget {
   final Map currentUser;
