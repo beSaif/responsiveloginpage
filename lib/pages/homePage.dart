@@ -5,6 +5,8 @@ import 'package:loginpage/pages/fundsPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loginpage/pages/login.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
   User user;
@@ -84,6 +86,96 @@ class _HomePageState extends State<HomePage> {
       returnValue = percentage.toStringAsFixed(2);
       return returnValue;
     }
+  }
+
+  // COIN SECTION BUY AND SELL
+
+  Future coinTransactionPopup(String type) {
+    String feedback = "enter number of coins";
+    return Alert(
+        context: context,
+        title: " ${type} Coin",
+        content: Column(
+          children: <Widget>[
+            TextField(
+              controller: coinNumberController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                icon: Icon(Icons.monetization_on),
+                labelText: feedback,
+              ),
+            ),
+          ],
+        ),
+        buttons: [
+          DialogButton(
+            onPressed: () => {
+              // cheking if there is balance
+              if (currentUser["walletBalance"] >
+                  (num.parse(coinNumberController.text) *
+                      coinPriceLive["currentPrice"]))
+                {
+                  coinTransaction(num.parse(coinNumberController.text), type),
+                  Navigator.pop(context)
+                }
+              else
+                {
+                  setState(() {
+                    feedback = "no money in wallet";
+                  })
+                },
+            },
+            child: Text(
+              type,
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+          )
+        ]).show();
+  }
+
+  TextEditingController coinNumberController =
+      new TextEditingController(); //text controller number of coins
+
+  //buy a buy sell coin updater
+  void coinTransaction(int coinPassed, String type) {
+    int totalCoins;
+    int walletBalance = currentUser["walletBalance"];
+    if (type == "BUY") {
+      totalCoins = currentUser["RC"] + coinPassed;
+      walletBalance =
+          (coinPassed * coinPriceLive["currentPrice"]) - walletBalance;
+    } else if (type == "SELL") {
+      totalCoins = currentUser["RC"] - coinPassed;
+      walletBalance =
+          (coinPassed * coinPriceLive["currentPrice"]) + walletBalance;
+    }
+
+    Map updateCoinHistory = {
+      "time": DateTime.now(),
+      "coin": coinPassed,
+      "type": type
+    };
+
+    CollectionReference userRef =
+        FirebaseFirestore.instance.collection("users");
+    userRef.doc(currentUser["uid"]).update({
+      "RC": totalCoins,
+      "coinHistory": FieldValue.arrayUnion([updateCoinHistory]),
+      "walletBalance": walletBalance,
+    });
+    refreshUserData(currentUser["uid"]);
+  }
+
+  // refreshing the transaction to update the list view
+  void refreshUserData(String uid) {
+    CollectionReference userRef =
+        FirebaseFirestore.instance.collection("users");
+    userRef.doc(uid).get().then((DocumentSnapshot documentSnapshot) {
+      setState(() {
+        currentUser = documentSnapshot.data();
+      });
+    });
+    coinNumberController.clear();
   }
 
   // coin % card background color
@@ -265,7 +357,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         color: Color(0xFF4185f4),
-                        onPressed: () {},
+                        onPressed: () {
+                          coinTransactionPopup("BUY");
+                        },
                       ),
                     ),
                     SizedBox(width: 20),
@@ -278,7 +372,9 @@ class _HomePageState extends State<HomePage> {
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         color: Color(0xFFdf514d),
-                        onPressed: () {},
+                        onPressed: () {
+                          coinTransactionPopup("SELL");
+                        },
                       ),
                     )
                   ],
