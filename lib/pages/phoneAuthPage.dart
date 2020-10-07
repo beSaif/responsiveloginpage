@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:loginpage/pages/homePage.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../size_config.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class PhoneAuthPage extends StatefulWidget {
   const PhoneAuthPage({Key key}) : super(key: key);
@@ -17,6 +18,22 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
   final _formKeyPhone = GlobalKey<FormState>();
   bool saveAttempted = false;
   String otpcode;
+
+  // flutter spinkit trigger
+  bool loadingState = false;
+  // function calling for loading screen to popup
+  void openLoadingDialoge() {
+    showDialog(
+      barrierDismissible: loadingState,
+      context: context,
+      builder: (BuildContext context) {
+        return SpinKitWave(
+          color: Color(0xFF0B3954),
+          size: 50.0,
+        );
+      },
+    );
+  }
 
   TextEditingController
       codeController; // codecontroller:smscode fix. not printing and all
@@ -64,6 +81,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                 DialogButton(
                   color: Color(0xFF0B3954),
                   onPressed: () async {
+                    openLoadingDialoge();
                     AuthCredential credential = PhoneAuthProvider.credential(
                         verificationId: verificationId, smsCode: otpcode);
                     UserCredential result =
@@ -75,6 +93,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                           MaterialPageRoute(
                               builder: (context) => HomePage(user: user)));
                     } else {
+                      loadingState = true;
                       print('error');
                     }
                   },
