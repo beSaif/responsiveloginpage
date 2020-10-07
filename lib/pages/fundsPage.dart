@@ -8,7 +8,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
 
 class FundsPage extends StatefulWidget {
-  final Map currentUser;
+  Map currentUser;
   FundsPage({Key key, this.currentUser}) : super(key: key);
   @override
   _FundsPageState createState() => _FundsPageState();
@@ -98,7 +98,8 @@ class _FundsPageState extends State<FundsPage> {
     print('updating wallet of ${widget.currentUser["uid"].toString()}');
     int updatedAmount = widget.currentUser["walletBalance"] +
         amount; // calculating the amount to update
-    widget.currentUser["walletBalance"] = updatedAmount;
+    //widget.currentUser["walletBalance"] = updatedAmount; // updating the local copy of walletBalance
+
     Map updateWalletHistory = {
       "time": DateTime.now(),
       "amount": num.parse(textEditingController.text),
@@ -109,6 +110,17 @@ class _FundsPageState extends State<FundsPage> {
     userRef.doc(widget.currentUser["uid"]).update({
       "walletBalance": updatedAmount,
       "walletHistory": FieldValue.arrayUnion([updateWalletHistory])
+    });
+    refreshUserData(widget.currentUser["uid"]);
+  }
+
+  void refreshUserData(String uid) {
+    CollectionReference userRef =
+        FirebaseFirestore.instance.collection("users");
+    userRef.doc(uid).get().then((DocumentSnapshot documentSnapshot) {
+      setState(() {
+        widget.currentUser = documentSnapshot.data();
+      });
     });
   }
 
@@ -283,7 +295,11 @@ class _FundsPageState extends State<FundsPage> {
                               ],
                             ),
                             color: Color(0xFF4185f4),
-                            onPressed: () {},
+                            onPressed: () {
+                              List walletHistory =
+                                  widget.currentUser["walletHistory"];
+                              print(walletHistory);
+                            },
                           ),
                         )
                       ],
