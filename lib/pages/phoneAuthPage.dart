@@ -43,7 +43,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
   // ignore: missing_return
   Future<bool> loginUser(phoneNumber, BuildContext context) async {
     FirebaseAuth _auth = FirebaseAuth.instance;
-
+    loadingState = true; // close loaging for otp input
     _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         timeout: Duration(seconds: 60),
@@ -81,19 +81,22 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                 DialogButton(
                   color: Color(0xFF0B3954),
                   onPressed: () async {
-                    openLoadingDialoge();
+                    openLoadingDialoge(); // open loading
                     AuthCredential credential = PhoneAuthProvider.credential(
                         verificationId: verificationId, smsCode: otpcode);
                     UserCredential result =
                         await _auth.signInWithCredential(credential);
                     User user = result.user;
                     if (user != null) {
+                      loadingState = true; // close loading if no user
+
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => HomePage(user: user)));
                     } else {
-                      loadingState = true;
+                      loadingState = true; // close loaging for error
+
                       print('error');
                     }
                   },
@@ -254,6 +257,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                         constraints: const BoxConstraints(maxWidth: 500),
                         child: RaisedButton(
                           onPressed: () {
+                            openLoadingDialoge(); // open loading
                             if (_formKeyPhone.currentState.validate()) {
                               _formKeyPhone.currentState.save();
                             }
