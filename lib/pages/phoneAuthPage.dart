@@ -197,7 +197,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                                       fontSize:
                                           SizeConfig.blockSizeHorizontal * 17,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.green),
+                                      color: Color(0xFFf1c40f)),
                                 ),
                               ),
                             ],
@@ -210,15 +210,17 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                                 text: TextSpan(children: <TextSpan>[
                                   TextSpan(
                                       text: 'We will send you an ',
-                                      style: TextStyle(color: Colors.green)),
+                                      style:
+                                          TextStyle(color: Color(0xFFf1c40f))),
                                   TextSpan(
                                       text: 'One Time Password ',
                                       style: TextStyle(
-                                          color: Colors.green,
+                                          color: Color(0xFFf1c40f),
                                           fontWeight: FontWeight.bold)),
                                   TextSpan(
                                       text: 'on this mobile number',
-                                      style: TextStyle(color: Colors.green)),
+                                      style:
+                                          TextStyle(color: Color(0xFFf1c40f))),
                                 ]),
                               )),
                         ],
@@ -275,7 +277,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                               loginUser(phoneNumber, context);
                             });
                           },
-                          color: Colors.green,
+                          color: Color(0xFFf1c40f),
                           shape: const RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(14))),
@@ -294,7 +296,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                                   decoration: BoxDecoration(
                                     borderRadius: const BorderRadius.all(
                                         Radius.circular(20)),
-                                    color: Colors.green,
+                                    color: Color(0xFFf1c40f),
                                   ),
                                   child: Icon(
                                     Icons.arrow_forward_ios,

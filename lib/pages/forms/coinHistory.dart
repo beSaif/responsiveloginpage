@@ -39,9 +39,13 @@ class _CoinHistoryState extends State<CoinHistory> {
                       height: 57,
                       width: 57,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(
-                              0xFF4185f4)), // TODO: Change Circle Color based on type
+                        shape: BoxShape.circle,
+                        color: widget.currentUser['coinHistory'][index]
+                                    ['type'] ==
+                                "BUY"
+                            ? Color(0xFF4185f4)
+                            : Color(0xFFdf514d),
+                      ), // TODO: Change Circle Color based on type
                       child: Text(
                         (() {
                           if (widget.currentUser['coinHistory'][index]['type']
@@ -101,7 +105,7 @@ class _CoinHistoryState extends State<CoinHistory> {
                       ],
                     ),
                     Text(
-                      '₹100',
+                      '₹${widget.currentUser['coinHistory'][index]['totalPrice'].toString()}',
                       style: TextStyle(
                         fontSize: 12,
                         fontFamily: 'Montserrat',

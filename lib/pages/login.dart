@@ -55,7 +55,7 @@ class _LogInPageState extends State<LogInPage> {
                           style: TextStyle(
                               fontSize: SizeConfig.blockSizeHorizontal * 24,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF0B3954)),
+                              color: Color(0xFFf1c40f)),
                         ),
                       ),
                     ],

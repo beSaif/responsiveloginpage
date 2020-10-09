@@ -86,7 +86,7 @@ class _LogInFormState extends State<LogInForm> {
                       fontWeight: FontWeight.bold,
                       color: Colors.grey),
                   focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.green))),
+                      borderSide: BorderSide(color: Color(0xFFf1c40f)))),
             ),
             TextFormField(
               obscureText: true,
@@ -112,7 +112,7 @@ class _LogInFormState extends State<LogInForm> {
                       fontWeight: FontWeight.bold,
                       color: Colors.grey),
                   focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.green))),
+                      borderSide: BorderSide(color: Color(0xFFf1c40f)))),
             ),
             SizedBox(
               height: SizeConfig.blockSizeVertical * 0.6,
@@ -126,7 +126,7 @@ class _LogInFormState extends State<LogInForm> {
                 child: Text(
                   'Forgot Password?',
                   style: TextStyle(
-                      color: Colors.green,
+                      color: Color(0xFFf1c40f),
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Montserrat',
                       decoration: TextDecoration.underline,
@@ -152,9 +152,9 @@ class _LogInFormState extends State<LogInForm> {
                 child: Material(
                   borderRadius: BorderRadius.circular(
                       SizeConfig.blockSizeHorizontal * 60),
-                  shadowColor: Colors.greenAccent,
+                  shadowColor: Color(0xFFf1c40f),
                   elevation: 7,
-                  color: Colors.green,
+                  color: Color(0xFFf1c40f),
                   child: Center(
                     child: Text(
                       'LOGIN',
@@ -217,7 +217,7 @@ class _LogInFormState extends State<LogInForm> {
                     style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontWeight: FontWeight.bold,
-                        color: Colors.green),
+                        color: Color(0xFFf1c40f)),
                   ),
                   SizedBox(
                     width: SizeConfig.blockSizeHorizontal * 0.2,
@@ -231,7 +231,7 @@ class _LogInFormState extends State<LogInForm> {
                       style: TextStyle(
                           fontFamily: 'Montserrat',
                           fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                          color: Color(0xFFf1c40f),
                           decoration: TextDecoration.underline,
                           decorationStyle: TextDecorationStyle.dotted),
                     ),

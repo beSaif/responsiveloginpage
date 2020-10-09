@@ -60,7 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           style: TextStyle(
                               fontSize: SizeConfig.blockSizeHorizontal * 14,
                               fontWeight: FontWeight.bold,
-                              color: Colors.green),
+                              color: Color(0xFFf1c40f)),
                         ),
                       ),
                     ],
