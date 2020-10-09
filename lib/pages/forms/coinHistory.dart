@@ -88,7 +88,7 @@ class _CoinHistoryState extends State<CoinHistory> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Text(
-                          '${widget.currentUser['coinHistory'][index]['coin'].toString()}',
+                          '${widget.currentUser['coinHistory'][index]['quantity'].toString()}',
                           style: TextStyle(
                             fontSize: 18,
                             fontFamily: 'Montserrat',

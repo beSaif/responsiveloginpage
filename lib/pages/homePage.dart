@@ -93,6 +93,7 @@ class _HomePageState extends State<HomePage> {
   // COIN SECTION BUY AND SELL
 
   Future coinTransactionPopup(String type) {
+    coinNumberController = TextEditingController(text: '');
     String feedback = "Enter quantity.";
     return Alert(
         context: context,
@@ -188,7 +189,9 @@ class _HomePageState extends State<HomePage> {
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.w500),
                         ),
-                        onPressed: null)
+                        onPressed: () {
+                          updateType(type, totalPrice, quantity);
+                        })
                   ]).show();
             },
             child: Text(
@@ -203,10 +206,94 @@ class _HomePageState extends State<HomePage> {
         ]).show();
   }
 
+  updateType(String type, int totalPrice, int quantity) {
+    if (type == 'BUY') {
+      if (totalPrice <= currentUser['walletBalance'] &&
+          currentUser['walletBalance'] != 0) {
+        updateTransaction(totalPrice, quantity, type);
+      }
+    }
+    if (type == 'SELL') {
+      if (currentUser['RC'] >= quantity && currentUser['RC'] != 0) {
+        print('Success');
+        updateTransaction(totalPrice, quantity, type);
+      } else {
+        Navigator.pop(context);
+        Alert(
+            context: context,
+            title: "YOU DON'T HAVE SUFFICIENT RC",
+            content: Text('Please add funds or buy RC.',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Montserrat")),
+            buttons: [
+              DialogButton(
+                  child: Text("Close",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.w500)),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  })
+            ]).show();
+      }
+    }
+  }
+
+  //firebase funtion to update transaction
+  void updateTransaction(int totalPrice, int quantity, String type) {
+    print('updating transactions of ${currentUser["uid"].toString()}');
+    if (type == 'BUY') {
+      int updatedQuantity =
+          currentUser["RC"] + quantity; // calculating the amount to update
+      //widget.currentUser["walletBalance"] = updatedAmount; // updating the local copy of walletBalance
+      int updatedWalletBalance = currentUser['walletBalance'] - totalPrice;
+      Map updateCoinHistory = {
+        "time": DateTime.now(),
+        "totalPrice": totalPrice,
+        "type": type,
+        "quantity": quantity,
+      };
+      CollectionReference userRef =
+          FirebaseFirestore.instance.collection("users");
+      userRef.doc(currentUser["uid"]).update({
+        "walletBalance": updatedWalletBalance,
+        "RC": updatedQuantity,
+        "coinHistory": FieldValue.arrayUnion([updateCoinHistory])
+      });
+      refreshUserData(currentUser["uid"]);
+      Navigator.pop(context);
+    } else if (type == 'SELL') {
+      int updatedQuantity =
+          currentUser["RC"] - quantity; // calculating the amount to update
+      //widget.currentUser["walletBalance"] = updatedAmount; // updating the local copy of walletBalance
+      int updatedWalletBalance = currentUser['walletBalance'] + totalPrice;
+      Map updateCoinHistory = {
+        "time": DateTime.now(),
+        "totalPrice": totalPrice,
+        "type": type,
+        "quantity": quantity,
+      };
+      CollectionReference userRef =
+          FirebaseFirestore.instance.collection("users");
+      userRef.doc(currentUser["uid"]).update({
+        "walletBalance": updatedWalletBalance,
+        "RC": updatedQuantity,
+        "coinHistory": FieldValue.arrayUnion([updateCoinHistory])
+      });
+      refreshUserData(currentUser["uid"]);
+      Navigator.pop(context);
+    }
+  }
+
   TextEditingController coinNumberController =
       new TextEditingController(); //text controller number of coins
 
-  //buy a buy sell coin updater
+  //buy sell coin updater
   void coinTransaction(int coinPassed, String type) {
     int totalCoins;
     int walletBalance = currentUser["walletBalance"];
@@ -223,7 +310,8 @@ class _HomePageState extends State<HomePage> {
     Map updateCoinHistory = {
       "time": DateTime.now(),
       "coin": coinPassed,
-      "type": type
+      "type": type,
+      //"amount":
     };
 
     CollectionReference userRef =
