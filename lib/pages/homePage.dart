@@ -464,8 +464,33 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       ),
+                      Container(
+                        margin: EdgeInsets.only(
+                            right: 20, left: 20, bottom: 0, top: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Current Price : ",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: "Montserrat"),
+                            ),
+                            Text(
+                              '₹${coinPriceLive["currentPrice"]}',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: "Montserrat"),
+                            ),
+                          ],
+                        ),
+                      ),
                       SizedBox(
-                        height: 80,
+                        height: 40,
                       ),
                       Container(
                         margin:
@@ -496,31 +521,6 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(16),
                       gradient: LinearGradient(
                           colors: [Color(0xFFe67e22), Color(0xFFf1c40f)])),
-                ),
-              ),
-              Container(
-                margin:
-                    EdgeInsets.only(right: 20, left: 20, bottom: 0, top: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Today's Price : ",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: "Montserrat"),
-                    ),
-                    Text(
-                      '₹${coinPriceLive["currentPrice"]}',
-                      style: TextStyle(
-                          color: Color(0xFF0B3954),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: "Montserrat"),
-                    ),
-                  ],
                 ),
               ),
               Container(

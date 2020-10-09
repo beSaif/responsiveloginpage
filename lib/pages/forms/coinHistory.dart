@@ -39,7 +39,9 @@ class _CoinHistoryState extends State<CoinHistory> {
                       height: 57,
                       width: 57,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: Color(0xFF4185f4)),
+                          shape: BoxShape.circle,
+                          color: Color(
+                              0xFF4185f4)), // TODO: Change Circle Color based on type
                       child: Text(
                         (() {
                           if (widget.currentUser['coinHistory'][index]['type']
