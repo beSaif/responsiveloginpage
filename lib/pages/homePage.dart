@@ -22,11 +22,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool loadingscreen = false;
   User user;
-  final firestoreInstance = FirebaseFirestore.instance;
   // firebase section.
-  Map coinPriceLive = {"lastPrice": 0, "currentPrice": 0};
   int currentPrice;
   int lastPrice;
+
+  Map currentUser = {
+    "name": " ",
+    "number": 0,
+    "RC": 0,
+    "walletBalance": 0,
+    "walletHistory": [],
+    "coinHistory": []
+  }; //! basic templaet illank app crash aaan for some reason
+
   void getCoinPrice() async {
     FirebaseFirestore.instance
         .collection('coinPrice/')
@@ -61,14 +69,6 @@ class _HomePageState extends State<HomePage> {
     //     });
   }
 
-  Map currentUser = {
-    "name": " ",
-    "number": 0,
-    "RC": 0,
-    "walletBalance": 0,
-    "walletHistory": [],
-    "coinHistory": []
-  }; //! basic templaet illank app crash aaan for some reason
   //fetching userDetainls
   void getCurrentUser(String uid) async {
     CollectionReference userRef = FirebaseFirestore.instance
@@ -91,6 +91,7 @@ class _HomePageState extends State<HomePage> {
           "walletHistory": [],
           "coinHistory": []
         });
+        getCurrentUser(user.uid);
       }
     });
   }
@@ -106,6 +107,12 @@ class _HomePageState extends State<HomePage> {
       returnValue = percentage.toStringAsFixed(2);
       return returnValue;
     }
+  }
+
+  // coin % card background color
+  double coinPercentageColor(currentPrice, lastPrice) {
+    double percentage = ((currentPrice - lastPrice) / lastPrice) * 100;
+    return percentage;
   }
 
   // COIN SECTION BUY AND SELL
@@ -358,12 +365,6 @@ class _HomePageState extends State<HomePage> {
     coinNumberController.clear();
   }
 
-  // coin % card background color
-  double coinPercentageColor(currentPrice, lastPrice) {
-    double percentage = ((currentPrice - lastPrice) / lastPrice) * 100;
-    return percentage;
-  }
-
   @override
   void initState() {
     getCoinPrice(); // auto fetching for the first time
@@ -479,7 +480,7 @@ class _HomePageState extends State<HomePage> {
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 4),
                                 child: Text(
-                                  coinPercentage(currentPrice, lastPrice),
+                                  "${coinPercentage(currentPrice, lastPrice)}%",
                                   style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.white,

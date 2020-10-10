@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loginpage/pages/adminPage.dart';
 import 'package:loginpage/pages/homePage.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../size_config.dart';
@@ -52,8 +53,18 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
           UserCredential result = await _auth.signInWithCredential(credential);
           User user = result.user;
           if (user != null) {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => HomePage(user: user)));
+            if (user.phoneNumber == "+911234554321") {
+              print("object");
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AdminPage(user: user)));
+            } else {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => HomePage(user: user)));
+            }
           }
         },
         verificationFailed: (FirebaseAuthException exception) {
@@ -97,10 +108,18 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                     if (user != null) {
                       loadingState = true; // close loading if no user
 
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomePage(user: user)));
+                      if (user.phoneNumber == "+911234554321") {
+                        print("object");
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AdminPage(user: user)));
+                      } else {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomePage(user: user)));
+                      }
                     } else {
                       loadingState = true; // close loaging for error
 
