@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loginpage/pages/phoneAuthPage.dart';
 import 'package:loginpage/size_config.dart';
-import '../homePage.dart';
+import '../User Pages/homePage.dart';
 
 import '../phoneAuthPage.dart';
 

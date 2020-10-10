@@ -4,13 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loginpage/pages/forms/coinHistory.dart';
-import 'package:loginpage/pages/fundsPage.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:loginpage/pages/User%20Pages/fundsPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loginpage/pages/login.dart';
 import 'package:loginpage/size_config.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:toast/toast.dart';
 
 class HomePage extends StatefulWidget {
   User user;
@@ -87,7 +85,7 @@ class _HomePageState extends State<HomePage> {
           "number": user.phoneNumber,
           "RC": 0,
           "walletBalance": 0,
-          "uid": "${uid}",
+          "uid": "$uid",
           "walletHistory": [],
           "coinHistory": []
         });

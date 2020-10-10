@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:loginpage/pages/adminPage.dart';
-import 'package:loginpage/pages/homePage.dart';
+import 'package:loginpage/pages/Admin%20Pages/adminPage.dart';
+import 'package:loginpage/pages/User%20Pages/homePage.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../size_config.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -14,6 +14,7 @@ class PhoneAuthPage extends StatefulWidget {
 }
 
 class _PhoneAuthPageState extends State<PhoneAuthPage> {
+  bool otpFailed = false;
   String phoneNumber;
   String verficationCode;
   final _formKeyPhone = GlobalKey<FormState>();
@@ -69,7 +70,29 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
         },
         verificationFailed: (FirebaseAuthException exception) {
           // ignore: unnecessary_brace_in_string_interps
-          print('Failed + ${exception}');
+          otpFailed = true;
+          print("OTP FAILED TO SEND");
+          print('Failed + $exception');
+          Navigator.pop(context);
+          Alert(
+              context: context,
+              title: "ERROR",
+              content: Column(
+                children: [
+                  Text("Error Code: ${exception.code.toString()}"),
+                  Text("Erro Message: ${exception.message.toString()}"),
+                ],
+              ),
+              buttons: [
+                DialogButton(
+                  color: Color(0xFFf1c40f),
+                  onPressed: () async {},
+                  child: Text(
+                    "Confirm",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                )
+              ]).show();
         },
         codeSent: (verificationId, [int forceResendingToker]) {
           // popup for entering the amount
@@ -121,7 +144,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                                 builder: (context) => HomePage(user: user)));
                       }
                     } else {
-                      loadingState = true; // close loaging for error
+                      loadingState = true; // close loading for error
 
                       print('error');
                     }
