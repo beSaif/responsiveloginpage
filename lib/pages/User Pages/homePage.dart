@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loginpage/main.dart';
 import 'package:loginpage/pages/forms/coinHistory.dart';
 import 'package:loginpage/pages/User%20Pages/fundsPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -238,6 +239,45 @@ class _HomePageState extends State<HomePage> {
       if (totalPrice <= currentUser['walletBalance'] &&
           currentUser['walletBalance'] != 0) {
         updateTransaction(totalPrice, quantity, type);
+      } else {
+        Navigator.pop(context);
+        Alert(
+            context: context,
+            title: "YOU DON'T HAVE SUFFICIENT BALANCE",
+            content: Text('Please add funds.',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: "Montserrat")),
+            buttons: [
+              DialogButton(
+                  child: Text("Close",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.w500)),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              DialogButton(
+                  child: Center(
+                    child: Text("FUNDS",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.w500)),
+                  ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                FundsPage(currentUser: currentUser)));
+                  })
+            ]).show();
       }
     }
     if (type == 'SELL') {
@@ -251,7 +291,7 @@ class _HomePageState extends State<HomePage> {
         Alert(
             context: context,
             title: "YOU DON'T HAVE SUFFICIENT RC",
-            content: Text('Please add funds or buy RC.',
+            content: Text('Please buy RC.',
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 14,

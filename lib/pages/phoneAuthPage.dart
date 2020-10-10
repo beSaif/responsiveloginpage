@@ -76,6 +76,9 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
           Navigator.pop(context);
           Alert(
               context: context,
+              closeFunction: () {
+                Navigator.pop(context);
+              },
               title: "ERROR",
               content: Column(
                 children: [
@@ -99,6 +102,10 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
           Alert(
               context: context,
               title: "OTP",
+              closeFunction: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
               content: Column(
                 children: <Widget>[
                   TextField(
