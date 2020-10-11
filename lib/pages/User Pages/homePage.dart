@@ -421,8 +421,8 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.account_balance_wallet),
-            onPressed: () async {
-              currentUser = await Navigator.push(
+            onPressed: () {
+              Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>

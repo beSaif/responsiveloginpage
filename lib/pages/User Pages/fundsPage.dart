@@ -41,7 +41,7 @@ class _FundsPageState extends State<FundsPage> {
   void openCheckout(orderType) {
     var options = {
       "key":
-          "rzp_test_NuHYDNYey0a6aH", //  keys "rzp_test_NuHYDNYey0a6aH" => test api, "rzp_live_D5pmfqctPDbERt" => real api
+          "rzp_live_D5pmfqctPDbERt", //  keys "rzp_test_NuHYDNYey0a6aH" => test api, "rzp_live_D5pmfqctPDbERt" => real api
       "amount": num.parse(textEditingController.text) *
           100, // this is because passing 100 directly will be 1 rupee (calculated in paisa)
       "entry": orderType, // here we can ask for refund or normal payment
@@ -130,7 +130,7 @@ class _FundsPageState extends State<FundsPage> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
-              Navigator.of(context).pop(widget.currentUser);
+              Navigator.of(context).pop();
             },
           ),
           elevation: 0,
