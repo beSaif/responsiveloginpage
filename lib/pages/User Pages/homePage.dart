@@ -414,253 +414,259 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.account_balance_wallet),
-          onPressed: () async {
-            currentUser = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => FundsPage(currentUser: currentUser)));
-            if (currentUser == null) {
-              getCurrentUser(user.uid);
-            }
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {
-              getCoinPrice();
-              getCurrentUser(user.uid);
+    return WillPopScope(
+      //To deactivate Back Button
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.account_balance_wallet),
+            onPressed: () async {
+              currentUser = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          FundsPage(currentUser: currentUser)));
+              if (currentUser == null) {
+                getCurrentUser(user.uid);
+              }
             },
           ),
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {
-              // FirebaseAuth.instance.signOut();
-              // Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => LogInPage()));
-              print(currentUser);
-            },
+          actions: [
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                getCoinPrice();
+                getCurrentUser(user.uid);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.exit_to_app),
+              onPressed: () {
+                // FirebaseAuth.instance.signOut();
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => LogInPage()));
+                print(currentUser);
+              },
+            ),
+          ],
+          elevation: 0,
+          backgroundColor: Color(0xFF0B3954),
+          brightness: Brightness.light,
+          centerTitle: true,
+          title: Text(
+            'RICH COIN',
           ),
-        ],
-        elevation: 0,
-        backgroundColor: Color(0xFF0B3954),
-        brightness: Brightness.light,
-        centerTitle: true,
-        title: Text(
-          'RICH COIN',
+          automaticallyImplyLeading: false,
         ),
-        automaticallyImplyLeading: false,
-      ),
-      backgroundColor: Color(0xFFf8f8ff), //change this
-      body: Container(
-        color: Color(0xFFf8f8ff),
-        height: double.infinity,
-        padding: EdgeInsets.only(bottom: 00),
-        width: MediaQuery.of(context).size.width,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                    color: Color(0xFF0B3954),
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(40),
-                        bottomRight: Radius.circular(40))),
-                child: Container(
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            bottom: 20, top: 20, right: 30, left: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Holdings Value',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16),
-                            ),
-                            Text(
-                              'INR',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 20,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '₹${currentPrice * currentUser["RC"]}', // taking elements from the current user map
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: coinPercentageColor(
-                                              currentPrice, lastPrice) >
-                                          0
-                                      ? Color(0xFF2ECC71)
-                                      : Color(0xFFdf514d),
-                                  borderRadius: BorderRadius.circular(20)),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              child: Text(
-                                "${coinPercentage(currentPrice, lastPrice)}%",
+        backgroundColor: Color(0xFFf8f8ff), //change this
+        body: Container(
+          color: Color(0xFFf8f8ff),
+          height: double.infinity,
+          padding: EdgeInsets.only(bottom: 00),
+          width: MediaQuery.of(context).size.width,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                      color: Color(0xFF0B3954),
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(40),
+                          bottomRight: Radius.circular(40))),
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(
+                              bottom: 20, top: 20, right: 30, left: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Holdings Value',
                                 style: TextStyle(
-                                    fontSize: 16,
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              Text(
+                                'INR',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 20,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '₹${currentPrice * currentUser["RC"]}', // taking elements from the current user map
+                                style: TextStyle(
                                     color: Colors.white,
+                                    fontSize: 40,
                                     fontWeight: FontWeight.bold),
                               ),
-                            ),
-                          ],
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: coinPercentageColor(
+                                                currentPrice, lastPrice) >
+                                            0
+                                        ? Color(0xFF2ECC71)
+                                        : Color(0xFFdf514d),
+                                    borderRadius: BorderRadius.circular(20)),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                child: Text(
+                                  "${coinPercentage(currentPrice, lastPrice)}%",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(
-                            right: 30, left: 20, bottom: 0, top: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Current Price : ",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: "Montserrat"),
-                            ),
-                            Text(
-                              '₹$currentPrice',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: "Montserrat"),
-                            ),
-                          ],
+                        Container(
+                          margin: EdgeInsets.only(
+                              right: 30, left: 20, bottom: 0, top: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Current Price : ",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: "Montserrat"),
+                              ),
+                              Text(
+                                '₹$currentPrice',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: "Montserrat"),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      Container(
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              ' ${currentUser["RC"].toString()} RC',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              '${currentUser["number"].toString()}',
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                ' ${currentUser["RC"].toString()} RC',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                '${currentUser["number"].toString()}',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                            colors: [Color(0xFFe67e22), Color(0xFFf1c40f)])),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30)),
+                            child: Text(
+                              'BUY',
                               style:
                                   TextStyle(color: Colors.white, fontSize: 16),
                             ),
-                          ],
+                          ),
+                          color: Color(0xFF4185f4),
+                          onPressed: () {
+                            coinTransactionPopup("BUY");
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Text(
+                            'SELL',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          color: Color(0xFFdf514d),
+                          onPressed: () {
+                            coinTransactionPopup("SELL");
+                          },
                         ),
                       )
                     ],
                   ),
-                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      gradient: LinearGradient(
-                          colors: [Color(0xFFe67e22), Color(0xFFf1c40f)])),
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text(
-                            'BUY',
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    'Transaction History',
+                    style: TextStyle(fontSize: 22),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  alignment: Alignment.topLeft,
+                  child: Container(
+                      child: (() {
+                    if (currentUser['coinHistory'].length == 0) {
+                      return Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(
+                            top: SizeConfig.blockSizeVertical * 10),
+                        child: Text(
+                          'No transaction has been done.',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.w100,
                           ),
                         ),
-                        color: Color(0xFF4185f4),
-                        onPressed: () {
-                          coinTransactionPopup("BUY");
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Text(
-                          'SELL',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                        color: Color(0xFFdf514d),
-                        onPressed: () {
-                          coinTransactionPopup("SELL");
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-                alignment: Alignment.topLeft,
-                child: Text(
-                  'Transaction History',
-                  style: TextStyle(fontSize: 22),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                alignment: Alignment.topLeft,
-                child: Container(
-                    child: (() {
-                  if (currentUser['coinHistory'].length == 0) {
-                    return Container(
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.only(
-                          top: SizeConfig.blockSizeVertical * 10),
-                      child: Text(
-                        'No transaction has been done.',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.w100,
-                        ),
-                      ),
-                    );
-                  } else {
-                    return CoinHistory(currentUser: currentUser);
-                  }
-                }())),
-              )
-            ],
+                      );
+                    } else {
+                      return CoinHistory(currentUser: currentUser);
+                    }
+                  }())),
+                )
+              ],
+            ),
           ),
         ),
       ),
