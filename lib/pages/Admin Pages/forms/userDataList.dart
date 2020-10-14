@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 
-class WalletHistory extends StatefulWidget {
-  final Map currentUser;
-  WalletHistory({Key key, this.currentUser}) : super(key: key);
+class UserDataList extends StatefulWidget {
   @override
-  _WalletHistoryState createState() => _WalletHistoryState();
+  _UserDataListState createState() => _UserDataListState();
 }
 
-class _WalletHistoryState extends State<WalletHistory> {
+class _UserDataListState extends State<UserDataList> {
+  String name = "John";
+  String phoneNumber = "+919995015935";
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
         primary: false,
         reverse: true,
-        itemCount: widget.currentUser['walletHistory'].length,
+        itemCount: 50,
         shrinkWrap: true,
         itemBuilder: (context, index) {
           return Container(
-            margin: EdgeInsets.only(bottom: 13),
-            height: 76,
+            margin: EdgeInsets.only(bottom: 13, left: 20, right: 20),
+            height: 100,
             padding: EdgeInsets.only(left: 24, top: 12, bottom: 12, right: 22),
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -41,22 +42,10 @@ class _WalletHistoryState extends State<WalletHistory> {
                       width: 57,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: widget.currentUser['walletHistory'][index]
-                                    ['type'] ==
-                                "DEPOSITED"
-                            ? Color(0xFF4cb050)
-                            : Color(0xFF4185f4),
+                        color: Color(0xFF4185f4),
                       ), // TODO: Change Circle Color based on type
                       child: Text(
-                        (() {
-                          if (widget.currentUser['walletHistory'][index]['type']
-                                  .toString() ==
-                              'Deposited') {
-                            return "D";
-                          } else {
-                            return "W";
-                          }
-                        }()),
+                        "${name[0]}",
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
                     ),
@@ -68,7 +57,7 @@ class _WalletHistoryState extends State<WalletHistory> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "${widget.currentUser['walletHistory'][index]['type'].toString()}",
+                          name,
                           style: TextStyle(
                             fontSize: 20,
                             fontFamily: 'Montserrat',
@@ -76,7 +65,16 @@ class _WalletHistoryState extends State<WalletHistory> {
                           ),
                         ),
                         Text(
-                          '${widget.currentUser['walletHistory'][index]['time'].toDate()}',
+                          'RC: ${5}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontFamily: 'Montserrat',
+                            color: Colors.grey[10],
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        Text(
+                          'Balance: ₹${4965}',
                           style: TextStyle(
                             fontSize: 13,
                             fontFamily: 'Montserrat',
@@ -92,14 +90,13 @@ class _WalletHistoryState extends State<WalletHistory> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      '${widget.currentUser['walletHistory'][index]['amount'].toString()}',
+                      phoneNumber,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 14,
                         fontFamily: 'Montserrat',
-                        color: Color(0xFF0B3954),
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w300,
                       ),
-                    )
+                    ),
                   ],
                 )
               ],

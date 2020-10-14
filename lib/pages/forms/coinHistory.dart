@@ -11,6 +11,7 @@ class _CoinHistoryState extends State<CoinHistory> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+        primary: false,
         reverse: true,
         itemCount: widget.currentUser['coinHistory'].length,
         shrinkWrap: true,

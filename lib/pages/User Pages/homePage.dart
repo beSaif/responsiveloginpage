@@ -443,9 +443,9 @@ class _HomePageState extends State<HomePage> {
             IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () {
-                // FirebaseAuth.instance.signOut();
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => LogInPage()));
+                FirebaseAuth.instance.signOut();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LogInPage()));
                 print(currentUser);
               },
             ),
