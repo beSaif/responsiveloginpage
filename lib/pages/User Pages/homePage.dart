@@ -421,12 +421,17 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.account_balance_wallet),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              currentUser = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
                           FundsPage(currentUser: currentUser)));
+              if (currentUser == null) {
+                print(
+                    "!!!!!!!!!!!!!!!!!! calling for firebase becaue of null returned   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                getCurrentUser(user.uid);
+              }
             },
           ),
           actions: [
@@ -440,9 +445,10 @@ class _HomePageState extends State<HomePage> {
             IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LogInPage()));
+                // FirebaseAuth.instance.signOut();
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => LogInPage()));
+                print(currentUser);
               },
             ),
           ],
