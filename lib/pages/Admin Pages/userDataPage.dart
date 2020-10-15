@@ -17,6 +17,12 @@ class _UserDataState extends State<UserData> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () {},
+          ),
+        ],
         elevation: 0,
         backgroundColor: Color(0xFF0B3954),
         brightness: Brightness.light,

@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loginpage/pages/Admin%20Pages/userDataPage.dart';
+import 'package:loginpage/pages/Admin%20Pages/withdrawRequests.dart';
 import 'package:loginpage/pages/login.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import './withdrawRequests.dart';
 
 class AdminPage extends StatefulWidget {
   User user;
@@ -448,7 +450,7 @@ class _AdminPageState extends State<AdminPage> {
                                       ),
                                     ),
                                     Text(
-                                      'WITHDRAW',
+                                      'WITHDRAW REQs',
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 16),
                                     ),
@@ -457,7 +459,11 @@ class _AdminPageState extends State<AdminPage> {
                               ),
                               color: Color(0xFF4cb050),
                               onPressed: () {
-                                PricePopup();
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            WithdrawRequests()));
                               },
                             ),
                             SizedBox(
