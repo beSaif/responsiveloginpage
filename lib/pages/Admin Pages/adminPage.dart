@@ -56,6 +56,7 @@ class _AdminPageState extends State<AdminPage> {
               }
               print("newPrice: $newPrice");
               updateCoinPrice(newPrice);
+              Navigator.pop(context)
             },
             child: Text(
               "CONFIRM",
