@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:loginpage/pages/Admin%20Pages/forms/withdrawRequestsList.dart';
 
 class WithdrawRequests extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
     userRef
         //.where("walletHistory", arrayContains: {"state": "Processing"})
         //.orderBy('_timeStampUTC', descending: true)
-        .where("RC", isLessThanOrEqualTo: 5)
+        .where("RC", isLessThanOrEqualTo: 0)
         .get()
         .then((QuerySnapshot querySnapshot) {
       print(querySnapshot.docs);
@@ -43,10 +44,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
-            onPressed: () {
-              print("!!!!!!!!!!! call query");
-              walletHistoryStateQuery();
-            },
+            onPressed: () {},
           ),
         ],
         elevation: 0,
@@ -63,7 +61,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
           margin: EdgeInsets.only(top: 10),
           color: Color(0xFFf8f8ff),
           width: double.infinity,
-          child: Text("pending withdraw requests")),
+          child: SingleChildScrollView(child: WithdrawRequestsList())),
     );
   }
 }

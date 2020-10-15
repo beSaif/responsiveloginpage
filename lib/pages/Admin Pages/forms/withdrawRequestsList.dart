@@ -1,11 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class WithdrawDataList extends StatefulWidget {
+class WithdrawRequestsList extends StatefulWidget {
   @override
-  _WithdrawDataListState createState() => _WithdrawDataListState();
+  _WithdrawRequestsListState createState() => _WithdrawRequestsListState();
 }
 
-class _WithdrawDataListState extends State<WithdrawDataList> {
+class _WithdrawRequestsListState extends State<WithdrawRequestsList> {
+  // globals
+  CollectionReference userRef = FirebaseFirestore.instance
+      .collection("users"); // firebase location of users
+
+  // query the firestore database for wallethistory => state=Processing
+  void walletHistoryStateQuery() {
+    //press refresh button to call
+    userRef
+        //.where("walletHistory", arrayContains: {"state": "Processing"})
+        //.orderBy('_timeStampUTC', descending: true)
+        .where("RC", isLessThanOrEqualTo: 0)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      print(querySnapshot.docs);
+    });
+  }
+
   String name = "John";
   String phoneNumber = "+919995015935";
 
@@ -18,7 +36,7 @@ class _WithdrawDataListState extends State<WithdrawDataList> {
           ListView.builder(
               primary: false,
               reverse: true,
-              itemCount: 50,
+              itemCount: 5,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return Container(
