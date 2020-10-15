@@ -66,8 +66,8 @@ class _FundsPageState extends State<FundsPage> {
   // functions for checking the payment states
   void handlerPaymentSuccess(PaymentSuccessResponse response) async {
     print("Payment success");
-    updateWallet(num.parse(textEditingController
-        .text)); // passing the amount to get updated in the firestore
+    updateWallet(int.parse(textEditingController.text), "Deposite",
+        "Complete"); // passing the amount to get updated in the firestore
     Toast.show(
       //will show a small feedback to user about the payment
       "Payment Success",
@@ -93,16 +93,24 @@ class _FundsPageState extends State<FundsPage> {
   }
 
   //firebase funtion to update wallet
-  void updateWallet(int amount) {
+  void updateWallet(int amount, String type, String state) {
     print('updating wallet of ${widget.currentUser["uid"].toString()}');
-    int updatedAmount = widget.currentUser["walletBalance"] +
-        amount; // calculating the amount to update
-    //widget.currentUser["walletBalance"] = updatedAmount; // updating the local copy of walletBalance
+    int updatedAmount = widget.currentUser["walletBalance"];
+
+    // calculating the amount to update
+    if (type == "Deposite") {
+      updatedAmount = widget.currentUser["walletBalance"] + amount;
+    } else if (type == "Withdraw") {
+      updatedAmount = widget.currentUser['walletBalance'] - amount;
+    }
+
+    // calculating the amount to update
 
     Map updateWalletHistory = {
       "time": DateTime.now(),
-      "amount": num.parse(textEditingController.text),
-      "type": "Deposited"
+      "amount": amount,
+      "type": type,
+      "state": state,
     };
     CollectionReference userRef =
         FirebaseFirestore.instance.collection("users");
@@ -111,6 +119,8 @@ class _FundsPageState extends State<FundsPage> {
       "walletHistory": FieldValue.arrayUnion([updateWalletHistory])
     });
     refreshUserData(widget.currentUser["uid"]);
+    textEditingController.clear();
+    withdrawAmountController.clear();
   }
 
   void refreshUserData(String uid) {
@@ -121,6 +131,74 @@ class _FundsPageState extends State<FundsPage> {
         widget.currentUser = documentSnapshot.data();
       });
     });
+  }
+
+  // withdraw button popups
+  TextEditingController withdrawAmountController = new TextEditingController();
+  Future withdrawAmount() {
+    withdrawAmountController = TextEditingController(text: '');
+    String feedback = "Enter amount";
+    return Alert(
+        context: context,
+        title: "Withdraw",
+        content: Column(
+          children: <Widget>[
+            Container(
+              child: TextField(
+                controller: withdrawAmountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.attach_money),
+                  labelText: feedback,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
+        buttons: [
+          DialogButton(
+            onPressed: () {
+              int amount = int.parse(withdrawAmountController.text);
+
+              // is there balace amount check
+              if (amount <= widget.currentUser['walletBalance']) {
+                // update everything function call
+                updateWallet(int.parse(withdrawAmountController.text),
+                    "Withdraw", "Processing");
+                Navigator.pop(context);
+              } else {
+                // no balace in account
+                Navigator.pop(context);
+                Alert(
+                    context: context,
+                    title: "YOU DON'T HAVE SUFFICIENT BALANCE",
+                    buttons: [
+                      DialogButton(
+                          child: Text("Close",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontFamily: 'Montserrat',
+                                  fontWeight: FontWeight.w500)),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                    ]).show();
+              }
+            },
+            child: Text(
+              "WITHDRAW",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontFamily: 'Montserrat',
+                  fontWeight: FontWeight.w500),
+            ),
+          )
+        ]).show();
   }
 
   @override
@@ -298,6 +376,7 @@ class _FundsPageState extends State<FundsPage> {
                               List walletHistory =
                                   widget.currentUser["walletHistory"];
                               print(walletHistory);
+                              withdrawAmount();
                             },
                           ),
                         )
