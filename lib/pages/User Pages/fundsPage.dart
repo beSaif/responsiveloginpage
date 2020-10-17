@@ -66,7 +66,7 @@ class _FundsPageState extends State<FundsPage> {
   // functions for checking the payment states
   void handlerPaymentSuccess(PaymentSuccessResponse response) async {
     print("Payment success");
-    updateWallet(int.parse(textEditingController.text), "Deposite",
+    updateWallet(int.parse(textEditingController.text), "Deposited",
         "Complete"); // passing the amount to get updated in the firestore
     Toast.show(
       //will show a small feedback to user about the payment
@@ -98,7 +98,7 @@ class _FundsPageState extends State<FundsPage> {
     int updatedAmount = widget.currentUser["walletBalance"];
 
     // calculating the amount to update
-    if (type == "Deposite") {
+    if (type == "Deposited") {
       updatedAmount = widget.currentUser["walletBalance"] + amount;
     } else if (type == "Withdraw") {
       updatedAmount = widget.currentUser['walletBalance'] - amount;

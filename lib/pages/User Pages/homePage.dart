@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               int quantity = int.parse(
                   coinNumberController.text); //To convert string to int.
-              if (quantity == 0) {
+              if (quantity < 0) {
                 print("zero");
               } else {
                 int totalPrice = quantity * currentPrice;

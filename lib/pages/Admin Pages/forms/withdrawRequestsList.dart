@@ -7,25 +7,13 @@ class WithdrawRequestsList extends StatefulWidget {
 }
 
 class _WithdrawRequestsListState extends State<WithdrawRequestsList> {
-  // globals
-  CollectionReference userRef = FirebaseFirestore.instance
-      .collection("users"); // firebase location of users
-
-  // query the firestore database for wallethistory => state=Processing
-  void walletHistoryStateQuery() {
-    //press refresh button to call
-    userRef
-        //.where("walletHistory", arrayContains: {"state": "Processing"})
-        //.orderBy('_timeStampUTC', descending: true)
-        .where("RC", isLessThanOrEqualTo: 0)
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      print(querySnapshot.docs);
-    });
-  }
-
   String name = "John";
   String phoneNumber = "+919995015935";
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

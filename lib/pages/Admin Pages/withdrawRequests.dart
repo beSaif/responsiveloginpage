@@ -9,6 +9,8 @@ class WithdrawRequests extends StatefulWidget {
 }
 
 class _WithdrawRequestsState extends State<WithdrawRequests> {
+  QuerySnapshot queryResults;
+
   // globals
   CollectionReference userRef = FirebaseFirestore.instance
       .collection("users"); // firebase location of users
@@ -17,17 +19,37 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
   void walletHistoryStateQuery() {
     //press refresh button to call
     userRef
-        //.where("walletHistory", arrayContains: {"state": "Processing"})
-        //.orderBy('_timeStampUTC', descending: true)
-        .where("RC", isLessThanOrEqualTo: 0)
+        .where("walletBalance", isGreaterThan: 0)
         .get()
         .then((QuerySnapshot querySnapshot) {
-      print(querySnapshot.docs);
+      setState(() {
+        queryResults = querySnapshot;
+        print(
+            "Query Results: ${queryResults.docs[0]["walletHistory"][0]["type"]}");
+      });
     });
+  }
+
+  itemCount() {
+    int count = 0;
+    print("userlength:${queryResults.docs.length} ");
+    for (var i = 0; i < queryResults.docs.length; i++) {
+      print(queryResults.docs[i]["number"]);
+      for (var j = 0; j < queryResults.docs[i]["walletHistory"].length; j++) {
+        if (queryResults.docs[i]["walletHistory"][j]["state"] == "Processing") {
+          count = count + 1;
+          print(
+              "User: ${queryResults.docs[i]["number"]},Index: ${j},Amount: ${queryResults.docs[i]["walletHistory"][j]["amount"]} ");
+        }
+      }
+    }
+    print("final count: $count");
+    return count;
   }
 
   @override
   void initState() {
+    walletHistoryStateQuery();
     super.initState();
   }
 
@@ -44,7 +66,10 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
-            onPressed: () {},
+            onPressed: () {
+              walletHistoryStateQuery();
+              itemCount();
+            },
           ),
         ],
         elevation: 0,
@@ -52,7 +77,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
         brightness: Brightness.light,
         centerTitle: true,
         title: Text(
-          'USER DATA',
+          'WITHDRAW REQUESTS',
         ),
         automaticallyImplyLeading: false,
       ),
@@ -61,7 +86,37 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
           margin: EdgeInsets.only(top: 10),
           color: Color(0xFFf8f8ff),
           width: double.infinity,
-          child: SingleChildScrollView(child: WithdrawRequestsList())),
+          child: SingleChildScrollView(
+              child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ListView.builder(
+                    primary: false,
+                    reverse: true,
+                    itemCount: itemCount(),
+                    shrinkWrap: true,
+                    itemBuilder: (
+                      context,
+                      index,
+                    ) {
+                      for (var i = 0; i < queryResults.docs.length; i++) {
+                        print(queryResults.docs[i]["number"]);
+                        for (var j = 0;
+                            j < queryResults.docs[i]["walletHistory"].length;
+                            j++) {
+                          if (queryResults.docs[i]["walletHistory"][j]
+                                  ["state"] ==
+                              "Processing") {
+                            return Text(
+                                "User: ${queryResults.docs[i]["number"]},Index: ${j},Amount: ${queryResults.docs[i]["walletHistory"][j]["amount"]} ");
+                          }
+                        }
+                      }
+                    }),
+              ],
+            ),
+          ))),
     );
   }
 }
