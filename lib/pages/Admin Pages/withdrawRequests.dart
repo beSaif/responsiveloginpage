@@ -99,21 +99,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                     itemBuilder: (
                       context,
                       index,
-                    ) {
-                      for (var i = 0; i < queryResults.docs.length; i++) {
-                        print(queryResults.docs[i]["number"]);
-                        for (var j = 0;
-                            j < queryResults.docs[i]["walletHistory"].length;
-                            j++) {
-                          if (queryResults.docs[i]["walletHistory"][j]
-                                  ["state"] ==
-                              "Processing") {
-                            return Text(
-                                "User: ${queryResults.docs[i]["number"]},Index: ${j},Amount: ${queryResults.docs[i]["walletHistory"][j]["amount"]} ");
-                          }
-                        }
-                      }
-                    }),
+                    ) {}),
               ],
             ),
           ))),
