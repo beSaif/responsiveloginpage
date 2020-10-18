@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loginpage/size_config.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:loginpage/pages/Admin%20Pages/forms/withdrawRequestsList.dart';
@@ -14,7 +15,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
   // globals
   CollectionReference userRef = FirebaseFirestore.instance
       .collection("users"); // firebase location of users
-
+  List withdrawRequestsUsers = [];
   // query the firestore database for wallethistory => state=Processing
   void walletHistoryStateQuery() {
     //press refresh button to call
@@ -26,6 +27,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
         queryResults = querySnapshot;
         print(
             "Query Results: ${queryResults.docs[0]["walletHistory"][0]["type"]}");
+        itemCount(); // calling the list to get update
       });
     });
   }
@@ -40,6 +42,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
           count = count + 1;
           print(
               "User: ${queryResults.docs[i]["number"]},Index: ${j},Amount: ${queryResults.docs[i]["walletHistory"][j]["amount"]} ");
+          withdrawRequestsUsers.add(queryResults.docs[i]);
         }
       }
     }
@@ -91,15 +94,34 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                ListView.builder(
-                    primary: false,
-                    reverse: true,
-                    itemCount: itemCount(),
-                    shrinkWrap: true,
-                    itemBuilder: (
-                      context,
-                      index,
-                    ) {}),
+                Container(
+                    child: (() {
+                  if (withdrawRequestsUsers.length == 0) {
+                    return Container(
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.only(
+                          top: SizeConfig.blockSizeVertical * 10),
+                      child: Text(
+                        'No withdraw requests',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontFamily: 'Montserrat',
+                          fontWeight: FontWeight.w100,
+                        ),
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                        primary: false,
+                        reverse: true,
+                        itemCount: itemCount(),
+                        shrinkWrap: true,
+                        itemBuilder: (
+                          context,
+                          index,
+                        ) {});
+                  }
+                }())),
               ],
             ),
           ))),
