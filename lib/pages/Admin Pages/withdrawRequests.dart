@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:loginpage/size_config.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:loginpage/pages/Admin%20Pages/forms/withdrawRequestsList.dart';
 
 class WithdrawRequests extends StatefulWidget {
   @override
@@ -89,42 +88,136 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
           margin: EdgeInsets.only(top: 10),
           color: Color(0xFFf8f8ff),
           width: double.infinity,
+          height: double.infinity,
           child: SingleChildScrollView(
-              child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                    child: (() {
-                  if (withdrawRequestsUsers.length == 0) {
-                    return Container(
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.only(
-                          top: SizeConfig.blockSizeVertical * 10),
-                      child: Text(
-                        'No withdraw requests',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.w100,
-                        ),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
+                    child: ListView.builder(
                         primary: false,
                         reverse: true,
-                        itemCount: itemCount(),
+                        itemCount: 5,
                         shrinkWrap: true,
                         itemBuilder: (
                           context,
                           index,
-                        ) {});
-                  }
-                }())),
+                        ) {
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 13),
+                            height: 100,
+                            padding: EdgeInsets.only(
+                                left: 24, top: 12, bottom: 12, right: 24),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Color(0xFFdfdfe5),
+                                      blurRadius: 10,
+                                      spreadRadius: 5,
+                                      offset: Offset(8, 8))
+                                ]),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "+91676125360",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: 'Montserrat',
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          'RC: ${5}',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontFamily: 'Montserrat',
+                                            color: Colors.grey[10],
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Balance: ₹${4965}',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontFamily: 'Montserrat',
+                                            color: Colors.grey[10],
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(
+                                          "₹${500}",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: 'Montserrat',
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            InkWell(
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 30,
+                                                color: Colors.green,
+                                              ),
+                                              onTap: () {
+                                                print("confirmed");
+                                              },
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            InkWell(
+                                              child: Icon(
+                                                Icons.not_interested,
+                                                size: 25,
+                                                color: Colors.red,
+                                              ),
+                                              onTap: () {
+                                                print("declined");
+                                              },
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: 15,
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          );
+                        })),
               ],
             ),
-          ))),
+          )),
     );
   }
 }
