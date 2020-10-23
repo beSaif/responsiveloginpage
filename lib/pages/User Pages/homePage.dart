@@ -53,19 +53,6 @@ class _HomePageState extends State<HomePage> {
         coinPercentageColor(currentPrice, lastPrice);
       });
     });
-
-    // CollectionReference coinPriceRef = FirebaseFirestore.instance
-    //     .collection("coinPrice"); // firebase storeage location
-    // // fetching coin price
-    // await coinPriceRef.get().then((QuerySnapshot querySnapshot) => {
-    //       querySnapshot.docs.forEach((doc) => {
-    //             setState(() {
-    //               coinPriceLive =
-    //                   doc.data(); //finds the value and stores in the variable
-    //             }),
-    //           }),
-    //       //print(coinPriceLive)
-    //     });
   }
 
   //fetching userDetainls

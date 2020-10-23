@@ -9,14 +9,14 @@ class WithdrawRequests extends StatefulWidget {
 }
 
 class _WithdrawRequestsState extends State<WithdrawRequests> {
-  QuerySnapshot queryResults;
-
   // globals
+  QuerySnapshot queryResults;
   CollectionReference userRef = FirebaseFirestore.instance
       .collection("users"); // firebase location of users
   List withdrawRequestsUsers = [];
-  // query the firestore database for wallethistory => state=Processing
+  Map withdrawUser = {};
 
+  // query the firestore database for wallethistory => state=Processing
   void walletHistoryStateQuery() {
     //press refresh button to call
     userRef
@@ -31,9 +31,9 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
     });
   }
 
+  //filtering the by ["state"] == "Processing"
   itemCount() {
     int count = 0;
-
     // empty the array everytime before adding the elements
     withdrawRequestsUsers = [];
 
@@ -54,8 +54,39 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
         }
       }
     }
-    // print("final count: $count");
     return count;
+  }
+
+  //update the withdraw reqts [state] == whateverispassed
+  void updateWithdrawReq(uid, tsid, state) {
+    print("user: ${uid}, tsid ${tsid},changed to ${state}");
+
+    //get the copy object by uid
+    userRef.doc(uid).get().then((DocumentSnapshot documentSnapshot) {
+      withdrawUser = documentSnapshot.data();
+    });
+
+    //get the copy of wallethistory array
+    List walletHistory = withdrawUser["walletHistory"];
+
+    // loop the wallethistroy and find the map by the TSID thus getting the index and a copy
+    //update the index with the copy of the map with only a change in state by state
+    int indexOfTsid = 0;
+    walletHistory.forEach((element) {
+      if (tsid == element["tsid"]) {
+        print(element);
+        element["state"] = state;
+        print(element);
+        //TODO update this somehow in firestore
+
+        // userRef.doc(uid).update({
+        //   "walletHistory": FieldValue.arrayUnion([element])
+        // });
+      }
+      return indexOfTsid += 1;
+    });
+
+    //refresh everthing so that firestore and we are on the same page
   }
 
   @override
@@ -80,7 +111,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
             onPressed: () {
               walletHistoryStateQuery();
               itemCount();
-              print("printing ${withdrawRequestsUsers}");
+              // print("printing ${withdrawRequestsUsers}");
             },
           ),
         ],
@@ -196,7 +227,12 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                                 color: Colors.green,
                                               ),
                                               onTap: () {
-                                                print("confirmed");
+                                                updateWithdrawReq(
+                                                    withdrawRequestsUsers[index]
+                                                        ["uid"],
+                                                    withdrawRequestsUsers[index]
+                                                        ["tsid"],
+                                                    "Completed");
                                               },
                                             ),
                                             SizedBox(
@@ -209,8 +245,12 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                                 color: Colors.red,
                                               ),
                                               onTap: () {
-                                                print(
-                                                    "${withdrawRequestsUsers[index]["tsid"].toString()}");
+                                                updateWithdrawReq(
+                                                    withdrawRequestsUsers[index]
+                                                        ["uid"],
+                                                    withdrawRequestsUsers[index]
+                                                        ["tsid"],
+                                                    "Failed");
                                               },
                                             )
                                           ],
