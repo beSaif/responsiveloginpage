@@ -5,6 +5,7 @@ import 'package:loginpage/size_config.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:toast/toast.dart';
+import 'package:uuid/uuid.dart';
 
 class FundsPage extends StatefulWidget {
   Map currentUser;
@@ -17,8 +18,11 @@ class _FundsPageState extends State<FundsPage> {
   TextEditingController textEditingController =
       new TextEditingController(); //text controller for getting the amount
 
-  // rabeeh's section for razorpay integration.
+  // initializing objects
+
   Razorpay razorpay;
+  var uuid = Uuid();
+
   @override
   void initState() {
     // List walletHistory = widget.currentUser['wallethistory'];
@@ -111,6 +115,7 @@ class _FundsPageState extends State<FundsPage> {
       "amount": amount,
       "type": type,
       "state": state,
+      "tsid": uuid.v4(),
     };
     CollectionReference userRef =
         FirebaseFirestore.instance.collection("users");

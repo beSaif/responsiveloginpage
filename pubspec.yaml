@@ -36,6 +36,7 @@ dependencies:
   razorpay_flutter: ^1.2.2 #payment gateway
   toast: ^0.1.5 # system level notification cloner
   rflutter_alert: ^1.1.0 # package for popup window
+  uuid: ^2.2.2 # for transaction unique id generation
 
 dev_dependencies:
   flutter_test:

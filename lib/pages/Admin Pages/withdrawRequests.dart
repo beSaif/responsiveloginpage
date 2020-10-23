@@ -48,7 +48,8 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
             "time": queryResults.docs[i]["walletHistory"][j]["time"],
             "uid": queryResults.docs[i]["uid"],
             "walletBalance": queryResults.docs[i]["walletBalance"],
-            "RC": queryResults.docs[i]["RC"]
+            "RC": queryResults.docs[i]["RC"],
+            "tsid": queryResults.docs[i]["walletHistory"][j]["tsid"]
           });
         }
       }
@@ -209,7 +210,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                               ),
                                               onTap: () {
                                                 print(
-                                                    "${withdrawRequestsUsers[index]["number"].toString()}");
+                                                    "${withdrawRequestsUsers[index]["tsid"].toString()}");
                                               },
                                             )
                                           ],
