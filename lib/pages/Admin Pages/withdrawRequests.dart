@@ -10,83 +10,37 @@ class WithdrawRequests extends StatefulWidget {
 
 class _WithdrawRequestsState extends State<WithdrawRequests> {
   // globals
-  QuerySnapshot queryResults;
+  QuerySnapshot querySnapshot;
   CollectionReference userRef = FirebaseFirestore.instance
       .collection("users"); // firebase location of users
-  List withdrawRequestsUsers = [];
-  Map withdrawUser = {};
+  CollectionReference walletHistoryRef =
+      FirebaseFirestore.instance.collection("walletHistory");
+  List withdrawReqQuery = [];
 
   // query the firestore database for wallethistory => state=Processing
   void walletHistoryStateQuery() {
     //press refresh button to call
-    userRef
-        .where("walletBalance", isGreaterThanOrEqualTo: 0)
+    walletHistoryRef
+        .where("state", isEqualTo: "Processing")
         .get()
         .then((QuerySnapshot querySnapshot) {
       setState(() {
-        queryResults = querySnapshot;
-
-        itemCount(); // calling the list to get update
+        querySnapshot = querySnapshot;
+        withdrawReqQuery = querySnapshot.docs.toList();
       });
     });
   }
 
   //filtering the by ["state"] == "Processing"
-  itemCount() {
-    int count = 0;
-    // empty the array everytime before adding the elements
-    withdrawRequestsUsers = [];
-
-    for (var i = 0; i < queryResults.docs.length; i++) {
-      for (var j = 0; j < queryResults.docs[i]["walletHistory"].length; j++) {
-        if (queryResults.docs[i]["walletHistory"][j]["state"] == "Processing") {
-          count = count + 1;
-          // addint the list of requests to the array
-          withdrawRequestsUsers.add({
-            "number": queryResults.docs[i]["number"],
-            "amount": queryResults.docs[i]["walletHistory"][j]["amount"],
-            "time": queryResults.docs[i]["walletHistory"][j]["time"],
-            "uid": queryResults.docs[i]["uid"],
-            "walletBalance": queryResults.docs[i]["walletBalance"],
-            "RC": queryResults.docs[i]["RC"],
-            "tsid": queryResults.docs[i]["walletHistory"][j]["tsid"]
-          });
-        }
-      }
-    }
-    return count;
-  }
 
   //update the withdraw reqts [state] == whateverispassed
-  void updateWithdrawReq(uid, tsid, state) {
-    print("user: ${uid}, tsid ${tsid},changed to ${state}");
+  void updateWithdrawReq(tsid, state) {
+    print("tsid ${tsid},changed to ${state}");
 
-    //get the copy object by uid
-    userRef.doc(uid).get().then((DocumentSnapshot documentSnapshot) {
-      withdrawUser = documentSnapshot.data();
-    });
-
-    //get the copy of wallethistory array
-    List walletHistory = withdrawUser["walletHistory"];
-
-    // loop the wallethistroy and find the map by the TSID thus getting the index and a copy
-    //update the index with the copy of the map with only a change in state by state
-    int indexOfTsid = 0;
-    walletHistory.forEach((element) {
-      if (tsid == element["tsid"]) {
-        print(element);
-        element["state"] = state;
-        print(element);
-        //TODO update this somehow in firestore
-
-        // userRef.doc(uid).update({
-        //   "walletHistory": FieldValue.arrayUnion([element])
-        // });
-      }
-      return indexOfTsid += 1;
-    });
-
-    //refresh everthing so that firestore and we are on the same page
+    walletHistoryRef.doc("/" + tsid).update({
+      "state": state,
+    }); //refresh everthing so that firestore and we are on the same page
+    walletHistoryStateQuery();
   }
 
   @override
@@ -110,7 +64,6 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
             icon: Icon(Icons.refresh),
             onPressed: () {
               walletHistoryStateQuery();
-              itemCount();
               // print("printing ${withdrawRequestsUsers}");
             },
           ),
@@ -138,7 +91,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                     child: ListView.builder(
                         primary: false,
                         reverse: true,
-                        itemCount: withdrawRequestsUsers.length,
+                        itemCount: withdrawReqQuery.length,
                         shrinkWrap: true,
                         itemBuilder: (
                           context,
@@ -174,7 +127,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          '${withdrawRequestsUsers[index]["number"]}',
+                                          '${withdrawReqQuery[index]["number"]}',
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontFamily: 'Montserrat',
@@ -182,7 +135,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                           ),
                                         ),
                                         Text(
-                                          'RC ${withdrawRequestsUsers[index]["RC"].toString()}',
+                                          'RC ${withdrawReqQuery[index]["RC"].toString()}',
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontFamily: 'Montserrat',
@@ -191,7 +144,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                           ),
                                         ),
                                         Text(
-                                          'Balance: ₹${withdrawRequestsUsers[index]["walletBalance"].toString()}',
+                                          'Balance: ₹${withdrawReqQuery[index]["walletBalance"].toString()}',
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontFamily: 'Montserrat',
@@ -211,7 +164,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Text(
-                                          "₹${withdrawRequestsUsers[index]["amount"].toString()}",
+                                          "₹${withdrawReqQuery[index]["amount"].toString()}",
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontFamily: 'Montserrat',
@@ -228,9 +181,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                               ),
                                               onTap: () {
                                                 updateWithdrawReq(
-                                                    withdrawRequestsUsers[index]
-                                                        ["uid"],
-                                                    withdrawRequestsUsers[index]
+                                                    withdrawReqQuery[index]
                                                         ["tsid"],
                                                     "Completed");
                                               },
@@ -246,9 +197,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                               ),
                                               onTap: () {
                                                 updateWithdrawReq(
-                                                    withdrawRequestsUsers[index]
-                                                        ["uid"],
-                                                    withdrawRequestsUsers[index]
+                                                    withdrawReqQuery[index]
                                                         ["tsid"],
                                                     "Failed");
                                               },

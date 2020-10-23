@@ -24,7 +24,8 @@ class _FundsPageState extends State<FundsPage> {
   CollectionReference userRef = FirebaseFirestore.instance.collection("users");
   Razorpay razorpay;
   var uuid = Uuid();
-  QuerySnapshot walletHistoryQueryResults;
+  QuerySnapshot querySnapshot;
+  List walletHistoryQueryResults = [];
 
   @override
   void initState() {
@@ -107,9 +108,11 @@ class _FundsPageState extends State<FundsPage> {
         .get()
         .then((QuerySnapshot querySnapshot) {
       setState(() {
-        walletHistoryQueryResults = querySnapshot;
+        querySnapshot = querySnapshot;
         // calling the list to get update
-        print(walletHistoryQueryResults.docs[0]["amount"]);
+        walletHistoryQueryResults = querySnapshot.docs.toList();
+        print("!!!!!!!!!!!!!!!!!!!!!");
+        print(walletHistoryQueryResults);
       });
     });
   }
@@ -134,15 +137,18 @@ class _FundsPageState extends State<FundsPage> {
 
     //wallethistory collection adding the new doc
 
-    walletHistoryRef.doc().set({
+    String tsid = uuid.v4();
+
+    walletHistoryRef.doc(tsid).set({
       "time": DateTime.now(),
       "amount": amount,
       "type": type,
       "state": state,
-      "tsid": uuid.v4(),
+      "tsid": tsid,
       "uid": widget.currentUser["uid"],
       "RC": widget.currentUser["RC"],
-      "walletBalance": updatedAmount
+      "walletBalance": updatedAmount,
+      "number": widget.currentUser["number"],
     });
 
     //refresh part
@@ -425,7 +431,7 @@ class _FundsPageState extends State<FundsPage> {
                     alignment: Alignment.topLeft,
                     child: Container(
                         child: (() {
-                      if (walletHistoryQueryResults.docs.length == null) {
+                      if (walletHistoryQueryResults.length == 0) {
                         return Container(
                           alignment: Alignment.center,
                           padding: EdgeInsets.only(
