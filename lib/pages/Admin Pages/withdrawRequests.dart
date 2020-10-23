@@ -19,13 +19,12 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
   void walletHistoryStateQuery() {
     //press refresh button to call
     userRef
-        .where("walletBalance", isGreaterThan: 0)
+        .where("walletBalance", isGreaterThanOrEqualTo: 0)
         .get()
         .then((QuerySnapshot querySnapshot) {
       setState(() {
         queryResults = querySnapshot;
-        print(
-            "Query Results: ${queryResults.docs[0]["walletHistory"][0]["type"]}");
+        //print( "Query Results: ${queryResults.docs[0]["walletHistory"][0]["type"]}");
         itemCount(); // calling the list to get update
       });
     });
@@ -33,19 +32,25 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
 
   itemCount() {
     int count = 0;
-    print("userlength:${queryResults.docs.length} ");
+    //print("userlength:${queryResults.docs.length} ");
     for (var i = 0; i < queryResults.docs.length; i++) {
-      print(queryResults.docs[i]["number"]);
+      //print(queryResults.docs[i]["number"]);
       for (var j = 0; j < queryResults.docs[i]["walletHistory"].length; j++) {
         if (queryResults.docs[i]["walletHistory"][j]["state"] == "Processing") {
           count = count + 1;
-          print(
-              "User: ${queryResults.docs[i]["number"]},Index: ${j},Amount: ${queryResults.docs[i]["walletHistory"][j]["amount"]} ");
-          withdrawRequestsUsers.add(queryResults.docs[i]);
+          //print( "User: ${queryResults.docs[i]["number"]},Index: ${j},Amount: ${queryResults.docs[i]["walletHistory"][j]["amount"]} ");
+          withdrawRequestsUsers.add({
+            "number": queryResults.docs[i]["number"],
+            "amount": queryResults.docs[i]["walletHistory"][j]["amount"],
+            "time": queryResults.docs[i]["walletHistory"][j]["time"],
+            "uid": queryResults.docs[i]["uid"],
+            "walletBalance": queryResults.docs[i]["walletBalance"],
+            "RC": queryResults.docs[i]["RC"]
+          });
         }
       }
     }
-    print("final count: $count");
+    // print("final count: $count");
     return count;
   }
 
@@ -71,6 +76,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
             onPressed: () {
               walletHistoryStateQuery();
               itemCount();
+              print("printing ${withdrawRequestsUsers}");
             },
           ),
         ],
@@ -97,7 +103,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                     child: ListView.builder(
                         primary: false,
                         reverse: true,
-                        itemCount: 5,
+                        itemCount: withdrawRequestsUsers.length,
                         shrinkWrap: true,
                         itemBuilder: (
                           context,
@@ -133,7 +139,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          "+91676125360",
+                                          '${withdrawRequestsUsers[index]["number"]}',
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontFamily: 'Montserrat',
@@ -141,7 +147,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                           ),
                                         ),
                                         Text(
-                                          'RC: ${5}',
+                                          'RC ${withdrawRequestsUsers[index]["RC"].toString()}',
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontFamily: 'Montserrat',
@@ -150,7 +156,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                           ),
                                         ),
                                         Text(
-                                          'Balance: ₹${4965}',
+                                          'Balance: ₹${withdrawRequestsUsers[index]["walletBalance"].toString()}',
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontFamily: 'Montserrat',
@@ -170,7 +176,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Text(
-                                          "₹${500}",
+                                          "₹${withdrawRequestsUsers[index]["amount"].toString()}",
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontFamily: 'Montserrat',
@@ -199,7 +205,8 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
                                                 color: Colors.red,
                                               ),
                                               onTap: () {
-                                                print("declined");
+                                                print(
+                                                    "${withdrawRequestsUsers[index]["number"].toString()}");
                                               },
                                             )
                                           ],
