@@ -16,6 +16,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
       .collection("users"); // firebase location of users
   List withdrawRequestsUsers = [];
   // query the firestore database for wallethistory => state=Processing
+
   void walletHistoryStateQuery() {
     //press refresh button to call
     userRef
@@ -24,7 +25,7 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
         .then((QuerySnapshot querySnapshot) {
       setState(() {
         queryResults = querySnapshot;
-        //print( "Query Results: ${queryResults.docs[0]["walletHistory"][0]["type"]}");
+
         itemCount(); // calling the list to get update
       });
     });
@@ -32,13 +33,15 @@ class _WithdrawRequestsState extends State<WithdrawRequests> {
 
   itemCount() {
     int count = 0;
-    //print("userlength:${queryResults.docs.length} ");
+
+    // empty the array everytime before adding the elements
+    withdrawRequestsUsers = [];
+
     for (var i = 0; i < queryResults.docs.length; i++) {
-      //print(queryResults.docs[i]["number"]);
       for (var j = 0; j < queryResults.docs[i]["walletHistory"].length; j++) {
         if (queryResults.docs[i]["walletHistory"][j]["state"] == "Processing") {
           count = count + 1;
-          //print( "User: ${queryResults.docs[i]["number"]},Index: ${j},Amount: ${queryResults.docs[i]["walletHistory"][j]["amount"]} ");
+          // addint the list of requests to the array
           withdrawRequestsUsers.add({
             "number": queryResults.docs[i]["number"],
             "amount": queryResults.docs[i]["walletHistory"][j]["amount"],
