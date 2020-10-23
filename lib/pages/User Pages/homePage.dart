@@ -74,7 +74,6 @@ class _HomePageState extends State<HomePage> {
           "RC": 0,
           "walletBalance": 0,
           "uid": "$uid",
-          "walletHistory": [],
           "coinHistory": []
         });
         getCurrentUser(user.uid);

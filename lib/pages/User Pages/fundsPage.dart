@@ -18,21 +18,23 @@ class _FundsPageState extends State<FundsPage> {
   TextEditingController textEditingController =
       new TextEditingController(); //text controller for getting the amount
 
-  // initializing objects
-
+  // globals
+  CollectionReference walletHistoryRef =
+      FirebaseFirestore.instance.collection("walletHistory");
+  CollectionReference userRef = FirebaseFirestore.instance.collection("users");
   Razorpay razorpay;
   var uuid = Uuid();
+  QuerySnapshot walletHistoryQueryResults;
 
   @override
   void initState() {
-    // List walletHistory = widget.currentUser['wallethistory'];
-    // walletHistory.forEach((value) => print('value:$value'));
-
     razorpay = new Razorpay();
     // razorpay checking all states
     razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
     razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
     razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
+    //get query for list rendering else will crash
+    walletHistoryQuery();
     super.initState();
   }
 
@@ -96,6 +98,22 @@ class _FundsPageState extends State<FundsPage> {
         duration: Toast.LENGTH_LONG, backgroundColor: Colors.blue[200]);
   }
 
+  //wallethistory querying for list render
+  // query the firestore database for wallethistory => state=Processing
+  Future walletHistoryQuery() async {
+    //press refresh button to call
+    await walletHistoryRef
+        .where("uid", isEqualTo: widget.currentUser["uid"])
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      setState(() {
+        walletHistoryQueryResults = querySnapshot;
+        // calling the list to get update
+        print(walletHistoryQueryResults.docs[0]["amount"]);
+      });
+    });
+  }
+
   //firebase funtion to update wallet
   void updateWallet(int amount, String type, String state) {
     print('updating wallet of ${widget.currentUser["uid"].toString()}');
@@ -110,19 +128,25 @@ class _FundsPageState extends State<FundsPage> {
 
     // calculating the amount to update
 
-    Map updateWalletHistory = {
+    userRef.doc(widget.currentUser["uid"]).update({
+      "walletBalance": updatedAmount,
+    });
+
+    //wallethistory collection adding the new doc
+
+    walletHistoryRef.doc().set({
       "time": DateTime.now(),
       "amount": amount,
       "type": type,
       "state": state,
       "tsid": uuid.v4(),
-    };
-    CollectionReference userRef =
-        FirebaseFirestore.instance.collection("users");
-    userRef.doc(widget.currentUser["uid"]).update({
-      "walletBalance": updatedAmount,
-      "walletHistory": FieldValue.arrayUnion([updateWalletHistory])
+      "uid": widget.currentUser["uid"],
+      "RC": widget.currentUser["RC"],
+      "walletBalance": updatedAmount
     });
+
+    //refresh part
+    walletHistoryQuery();
     refreshUserData(widget.currentUser["uid"]);
     textEditingController.clear();
     withdrawAmountController.clear();
@@ -401,7 +425,7 @@ class _FundsPageState extends State<FundsPage> {
                     alignment: Alignment.topLeft,
                     child: Container(
                         child: (() {
-                      if (widget.currentUser['walletHistory'].length == 0) {
+                      if (walletHistoryQueryResults.docs.length == null) {
                         return Container(
                           alignment: Alignment.center,
                           padding: EdgeInsets.only(
@@ -416,7 +440,8 @@ class _FundsPageState extends State<FundsPage> {
                           ),
                         );
                       } else {
-                        return WalletHistory(currentUser: widget.currentUser);
+                        return WalletHistory(
+                            walletHistory: walletHistoryQueryResults);
                       }
                     }())),
                   ),

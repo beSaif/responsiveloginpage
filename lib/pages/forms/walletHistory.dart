@@ -1,8 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class WalletHistory extends StatefulWidget {
-  final Map currentUser;
-  WalletHistory({Key key, this.currentUser}) : super(key: key);
+  final QuerySnapshot walletHistory;
+  WalletHistory({Key key, this.walletHistory}) : super(key: key);
   @override
   _WalletHistoryState createState() => _WalletHistoryState();
 }
@@ -13,7 +14,7 @@ class _WalletHistoryState extends State<WalletHistory> {
     return ListView.builder(
         primary: false,
         reverse: true,
-        itemCount: widget.currentUser['walletHistory'].length,
+        itemCount: widget.walletHistory.docs.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
           return Container(
@@ -41,15 +42,14 @@ class _WalletHistoryState extends State<WalletHistory> {
                       width: 57,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: widget.currentUser['walletHistory'][index]
-                                    ['type'] ==
+                        color: widget.walletHistory.docs[index]['type'] ==
                                 "DEPOSITED"
                             ? Color(0xFF4cb050)
                             : Color(0xFF4185f4),
-                      ), // TODO: Change Circle Color based on type
+                      ),
                       child: Text(
                         (() {
-                          if (widget.currentUser['walletHistory'][index]['type']
+                          if (widget.walletHistory.docs[index]['type']
                                   .toString() ==
                               'Deposited') {
                             return "D";
@@ -68,7 +68,7 @@ class _WalletHistoryState extends State<WalletHistory> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "${widget.currentUser['walletHistory'][index]['type'].toString()}",
+                          "${widget.walletHistory.docs[index]['type'].toString()}",
                           style: TextStyle(
                             fontSize: 20,
                             fontFamily: 'Montserrat',
@@ -76,7 +76,16 @@ class _WalletHistoryState extends State<WalletHistory> {
                           ),
                         ),
                         Text(
-                          '${widget.currentUser['walletHistory'][index]['time'].toDate()}',
+                          '${widget.walletHistory.docs[index]['time'].toDate()}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontFamily: 'Montserrat',
+                            color: Colors.grey[10],
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        Text(
+                          '${widget.walletHistory.docs[index]['type']}',
                           style: TextStyle(
                             fontSize: 13,
                             fontFamily: 'Montserrat',
@@ -92,7 +101,7 @@ class _WalletHistoryState extends State<WalletHistory> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      '${widget.currentUser['walletHistory'][index]['amount'].toString()}',
+                      '${widget.walletHistory.docs[index]['amount'].toString()}',
                       style: TextStyle(
                         fontSize: 18,
                         fontFamily: 'Montserrat',
