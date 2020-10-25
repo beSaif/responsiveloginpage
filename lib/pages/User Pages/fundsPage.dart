@@ -74,7 +74,7 @@ class _FundsPageState extends State<FundsPage> {
   void handlerPaymentSuccess(PaymentSuccessResponse response) async {
     print("Payment success");
     updateWallet(int.parse(textEditingController.text), "Deposited",
-        "Complete"); // passing the amount to get updated in the firestore
+        "Completed"); // passing the amount to get updated in the firestore
     Toast.show(
       //will show a small feedback to user about the payment
       "Payment Success",

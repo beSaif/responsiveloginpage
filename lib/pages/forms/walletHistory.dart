@@ -42,10 +42,9 @@ class _WalletHistoryState extends State<WalletHistory> {
                       width: 57,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color:
-                            widget.walletHistory[index]['type'] == "DEPOSITED"
-                                ? Color(0xFF4cb050)
-                                : Color(0xFF4185f4),
+                        color: widget.walletHistory[index]['type'][0] == "D"
+                            ? Color(0xFF4cb050)
+                            : Color(0xFF4185f4),
                       ),
                       child: Text(
                         (() {
@@ -66,13 +65,37 @@ class _WalletHistoryState extends State<WalletHistory> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "${widget.walletHistory[index]['type'].toString()}",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.w600,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              "${widget.walletHistory[index]['type'].toString()}",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(" | "),
+                            Text(
+                              '${widget.walletHistory[index]['state']}',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: () {
+                                    if (widget.walletHistory[index]['state'] ==
+                                        "Completed") {
+                                      return Colors.green;
+                                    }
+                                    if (widget.walletHistory[index]['state'] ==
+                                        "Processing") {
+                                      return Colors.blue;
+                                    }
+                                    if (widget.walletHistory[index]['state'] ==
+                                        "Failed") {
+                                      return Colors.red;
+                                    }
+                                  }()),
+                            )
+                          ],
                         ),
                         Text(
                           '${widget.walletHistory[index]['time'].toDate()}',
@@ -83,15 +106,6 @@ class _WalletHistoryState extends State<WalletHistory> {
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        Text(
-                          '${widget.walletHistory[index]['state']}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontFamily: 'Montserrat',
-                            color: Colors.grey[10],
-                            fontWeight: FontWeight.w400,
-                          ),
-                        )
                       ],
                     ),
                   ],
