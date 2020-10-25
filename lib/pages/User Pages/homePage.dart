@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:loginpage/main.dart';
 import 'package:loginpage/pages/forms/coinHistory.dart';
 import 'package:loginpage/pages/User%20Pages/fundsPage.dart';
@@ -69,7 +70,6 @@ class _HomePageState extends State<HomePage> {
         print('no user found, don\'t worry machane we can create');
         // creating the new user for the database with his uid
         userRef.doc(uid).set({
-          "name": " ",
           "number": user.phoneNumber,
           "RC": 0,
           "walletBalance": 0,
@@ -398,6 +398,21 @@ class _HomePageState extends State<HomePage> {
 
   _HomePageState(this.user);
 
+  // function calling for loading screen to popup
+  void openLoadingDialoge() {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return SpinKitFadingFour(
+          color: Color(0xFFf1c40f),
+          size: 50.0,
+          duration: Duration(seconds: 3),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -421,9 +436,13 @@ class _HomePageState extends State<HomePage> {
           actions: [
             IconButton(
               icon: Icon(Icons.refresh),
-              onPressed: () {
+              onPressed: () async {
+                openLoadingDialoge();
                 getCoinPrice();
                 getCurrentUser(user.uid);
+                Future.delayed(Duration(seconds: 1), () {
+                  Navigator.of(context).pop();
+                });
               },
             ),
             IconButton(

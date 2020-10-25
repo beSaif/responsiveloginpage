@@ -36,6 +36,7 @@ class _FundsPageState extends State<FundsPage> {
     razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
     //get query for list rendering else will crash
     walletHistoryQuery();
+    walletBalanceCalculator();
     super.initState();
   }
 
@@ -115,6 +116,49 @@ class _FundsPageState extends State<FundsPage> {
         print(walletHistoryQueryResults);
       });
     });
+  }
+
+  walletBalanceCalculator() {
+    int count = walletHistoryQueryResults.length;
+    int dcompleted = 0;
+    int wcompleted = 0;
+    int processing = 0;
+    int failed = 0;
+    int walletBalanceSum = 0;
+    for (int i = 0; i < count; i++) {
+      if (walletHistoryQueryResults[i]['uid'] == widget.currentUser['uid']) {
+        walletBalanceSum = walletBalanceSum + 1;
+        if (walletHistoryQueryResults[i]['type'] == "Deposited") {
+          dcompleted = walletHistoryQueryResults[i]['amount'] + dcompleted;
+        }
+        if (walletHistoryQueryResults[i]['type'] == "Withdraw" &&
+            walletHistoryQueryResults[i]['state'] == "Completed") {
+          wcompleted = walletHistoryQueryResults[i]['amount'] + wcompleted;
+        }
+        if (walletHistoryQueryResults[i]['type'] == "Withdraw" &&
+            walletHistoryQueryResults[i]['state'] == "Processing") {
+          processing = walletHistoryQueryResults[i]['amount'] + processing;
+        }
+        if (walletHistoryQueryResults[i]['type'] == "Withdraw" &&
+            walletHistoryQueryResults[i]['state'] == "Failed") {
+          failed = walletHistoryQueryResults[i]['amount'] + failed;
+        }
+      }
+    }
+    print("No. of transactions: $walletBalanceSum");
+    print("Deposited Completed: $dcompleted");
+    print("Withdraw Completed: $wcompleted");
+    print("Withdraw Processing: $processing");
+    print("Withdraw Failed: $failed");
+
+    walletBalanceSum = (dcompleted - (wcompleted + processing)) + failed;
+
+    print("Wallet Balance: $walletBalanceSum");
+    userRef.doc(widget.currentUser["uid"]).update({
+      "walletBalance": walletBalanceSum,
+    });
+
+    return walletBalanceSum;
   }
 
   //firebase funtion to update wallet
@@ -240,21 +284,28 @@ class _FundsPageState extends State<FundsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.of(context).pop(widget.currentUser);
-            },
-          ),
-          elevation: 0,
-          backgroundColor: Color(0xFF0B3954),
-          brightness: Brightness.light,
-          centerTitle: true,
-          title: Text(
-            'FUNDS',
-          ),
-          automaticallyImplyLeading: false,
-        ),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios),
+              onPressed: () {
+                Navigator.of(context).pop(widget.currentUser);
+              },
+            ),
+            elevation: 0,
+            backgroundColor: Color(0xFF0B3954),
+            brightness: Brightness.light,
+            centerTitle: true,
+            title: Text(
+              'FUNDS',
+            ),
+            automaticallyImplyLeading: false,
+            actions: [
+              IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () {
+                  walletBalanceCalculator();
+                },
+              ),
+            ]),
         backgroundColor: Color(0xFFf8f8ff),
         body: Container(
           color: Color(0xFFf8f8ff),
