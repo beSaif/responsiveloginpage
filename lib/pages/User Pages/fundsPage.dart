@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:loginpage/pages/forms/walletHistory.dart';
 import 'package:loginpage/size_config.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -26,25 +27,7 @@ class _FundsPageState extends State<FundsPage> {
   var uuid = Uuid();
   QuerySnapshot querySnapshot;
   List walletHistoryQueryResults = [];
-
-  @override
-  void initState() {
-    razorpay = new Razorpay();
-    // razorpay checking all states
-    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
-    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
-    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
-    //get query for list rendering else will crash
-    walletHistoryQuery();
-    walletBalanceCalculator();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    razorpay.clear();
-  }
+  int checkneg; // to check if amount is negative
 
   void openCheckout(orderType) {
     var options = {
@@ -112,53 +95,10 @@ class _FundsPageState extends State<FundsPage> {
         querySnapshot = querySnapshot;
         // calling the list to get update
         walletHistoryQueryResults = querySnapshot.docs.toList();
-        print("!!!!!!!!!!!!!!!!!!!!!");
-        print(walletHistoryQueryResults);
+        print(
+            "walletHistoryQueryResults Available: $walletHistoryQueryResults");
       });
     });
-  }
-
-  walletBalanceCalculator() {
-    int count = walletHistoryQueryResults.length;
-    int dcompleted = 0;
-    int wcompleted = 0;
-    int processing = 0;
-    int failed = 0;
-    int walletBalanceSum = 0;
-    for (int i = 0; i < count; i++) {
-      if (walletHistoryQueryResults[i]['uid'] == widget.currentUser['uid']) {
-        walletBalanceSum = walletBalanceSum + 1;
-        if (walletHistoryQueryResults[i]['type'] == "Deposited") {
-          dcompleted = walletHistoryQueryResults[i]['amount'] + dcompleted;
-        }
-        if (walletHistoryQueryResults[i]['type'] == "Withdraw" &&
-            walletHistoryQueryResults[i]['state'] == "Completed") {
-          wcompleted = walletHistoryQueryResults[i]['amount'] + wcompleted;
-        }
-        if (walletHistoryQueryResults[i]['type'] == "Withdraw" &&
-            walletHistoryQueryResults[i]['state'] == "Processing") {
-          processing = walletHistoryQueryResults[i]['amount'] + processing;
-        }
-        if (walletHistoryQueryResults[i]['type'] == "Withdraw" &&
-            walletHistoryQueryResults[i]['state'] == "Failed") {
-          failed = walletHistoryQueryResults[i]['amount'] + failed;
-        }
-      }
-    }
-    print("No. of transactions: $walletBalanceSum");
-    print("Deposited Completed: $dcompleted");
-    print("Withdraw Completed: $wcompleted");
-    print("Withdraw Processing: $processing");
-    print("Withdraw Failed: $failed");
-
-    walletBalanceSum = (dcompleted - (wcompleted + processing)) + failed;
-
-    print("Wallet Balance: $walletBalanceSum");
-    userRef.doc(widget.currentUser["uid"]).update({
-      "walletBalance": walletBalanceSum,
-    });
-
-    return walletBalanceSum;
   }
 
   //firebase funtion to update wallet
@@ -241,31 +181,34 @@ class _FundsPageState extends State<FundsPage> {
           DialogButton(
             onPressed: () {
               int amount = int.parse(withdrawAmountController.text);
-
-              // is there balace amount check
-              if (amount <= widget.currentUser['walletBalance']) {
-                // update everything function call
-                updateWallet(int.parse(withdrawAmountController.text),
-                    "Withdraw", "Processing");
-                Navigator.pop(context);
+              if (amount < 0) {
+                print("zero");
               } else {
-                // no balace in account
-                Navigator.pop(context);
-                Alert(
-                    context: context,
-                    title: "YOU DON'T HAVE SUFFICIENT BALANCE",
-                    buttons: [
-                      DialogButton(
-                          child: Text("Close",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontFamily: 'Montserrat',
-                                  fontWeight: FontWeight.w500)),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          }),
-                    ]).show();
+                // is there balace amount check
+                if (amount <= widget.currentUser['walletBalance']) {
+                  // update everything function call
+                  updateWallet(int.parse(withdrawAmountController.text),
+                      "Withdraw", "Processing");
+                  Navigator.pop(context);
+                } else {
+                  // no balace in account
+                  Navigator.pop(context);
+                  Alert(
+                      context: context,
+                      title: "YOU DON'T HAVE SUFFICIENT BALANCE",
+                      buttons: [
+                        DialogButton(
+                            child: Text("Close",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.w500)),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }),
+                      ]).show();
+                }
               }
             },
             child: Text(
@@ -278,6 +221,80 @@ class _FundsPageState extends State<FundsPage> {
             ),
           )
         ]).show();
+  }
+
+  Future walletBalanceCalculator() async {
+    if (walletHistoryQueryResults.isEmpty) {
+      print("walletHistoryQueryResults empty");
+    } else {
+      print("Calculator Started");
+      print("walletHistoryQueryResults not empty");
+      int count = walletHistoryQueryResults.length;
+      int dcompleted = 0;
+      int wcompleted = 0;
+      int processing = 0;
+      int failed = 0;
+      int walletBalanceSum = 0;
+      for (int i = 0; i < count; i++) {
+        if (walletHistoryQueryResults[i]['uid'] == widget.currentUser['uid']) {
+          walletBalanceSum = walletBalanceSum + 1;
+          if (walletHistoryQueryResults[i]['type'] == "Deposited") {
+            dcompleted = walletHistoryQueryResults[i]['amount'] + dcompleted;
+          }
+          if (walletHistoryQueryResults[i]['type'] == "Withdraw" &&
+              walletHistoryQueryResults[i]['state'] == "Completed") {
+            wcompleted = walletHistoryQueryResults[i]['amount'] + wcompleted;
+          }
+          if (walletHistoryQueryResults[i]['type'] == "Withdraw" &&
+              walletHistoryQueryResults[i]['state'] == "Processing") {
+            processing = walletHistoryQueryResults[i]['amount'] + processing;
+          }
+          if (walletHistoryQueryResults[i]['type'] == "Withdraw" &&
+              walletHistoryQueryResults[i]['state'] == "Failed") {
+            failed = walletHistoryQueryResults[i]['amount'] + failed;
+          }
+        }
+      }
+      print("No. of transactions: $walletBalanceSum");
+      print("Deposited Completed: $dcompleted");
+      print("Withdraw Completed: $wcompleted");
+      print("Withdraw Processing: $processing");
+      print("Withdraw Failed: $failed");
+
+      walletBalanceSum = ((dcompleted) - (wcompleted + processing));
+
+      print("Wallet Balance: $walletBalanceSum");
+      userRef.doc(widget.currentUser["uid"]).update({
+        "walletBalance": walletBalanceSum,
+      });
+
+      return walletBalanceSum;
+    }
+  }
+
+  Future newinitstate() async {
+    //newinitstate because can't use await in initstate
+    await walletHistoryQuery();
+    await walletBalanceCalculator();
+    print("Widget Wallet Balance: ${widget.currentUser['walletBalance']}");
+  }
+
+  @override
+  void initState() {
+    razorpay = new Razorpay();
+    // razorpay checking all states
+    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
+    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
+    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
+    //get query for list rendering else will crash
+    newinitstate();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    razorpay.clear();
   }
 
   @override
@@ -307,205 +324,233 @@ class _FundsPageState extends State<FundsPage> {
               ),
             ]),
         backgroundColor: Color(0xFFf8f8ff),
-        body: Container(
-          color: Color(0xFFf8f8ff),
-          padding: EdgeInsets.only(bottom: 00),
-          width: MediaQuery.of(context).size.width,
-          child: Container(
-            height: double.infinity,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                        color: Color(0xFF0B3954),
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(40),
-                            bottomRight: Radius.circular(40))),
-                    child: Container(
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Wallet Balance',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16),
+        body: (() {
+          if (walletHistoryQueryResults == null) {
+            // walletHistoryQuery();
+            // walletBalanceCalculator();
+            return Container(
+              child: Center(
+                  child: SpinKitFadingCube(
+                color: Colors.yellow,
+              )),
+            );
+          } else {
+            return Container(
+              color: Color(0xFFf8f8ff),
+              padding: EdgeInsets.only(bottom: 00),
+              width: MediaQuery.of(context).size.width,
+              child: Container(
+                height: double.infinity,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(bottom: 10),
+                        decoration: BoxDecoration(
+                            color: Color(0xFF0B3954),
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(40),
+                                bottomRight: Radius.circular(40))),
+                        child: Container(
+                          child: Column(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 20),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Wallet Balance',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 16),
+                                    ),
+                                    Text(
+                                      'INR',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  'INR',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(bottom: 35),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '₹${widget.currentUser['walletBalance'].toString()}',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 40,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: LinearGradient(
-                              colors: [Color(0xFFe67e22), Color(0xFFf1c40f)])),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Icon(
-                                    Icons.add,
-                                    color: Colors.white,
-                                  ),
-                                  Text(
-                                    'ADD FUNDS',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize:
-                                            SizeConfig.blockSizeHorizontal *
-                                                3.3),
-                                  ),
-                                ],
                               ),
-                            ),
-                            color: Color(0xFF4cb050),
-                            onPressed: () {
-                              // popup for entering the amount
-                              Alert(
-                                  context: context,
-                                  title: "DEPOSIT",
-                                  content: Column(
-                                    children: <Widget>[
-                                      TextField(
-                                        controller: textEditingController,
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          icon: Text("\u20B9"), // rupee icon
-                                          labelText: 'Amount',
-                                        ),
+                              Container(
+                                margin: EdgeInsets.only(bottom: 35),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '₹${widget.currentUser['walletBalance'].toString()}',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 40,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 40),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              gradient: LinearGradient(colors: [
+                                Color(0xFFe67e22),
+                                Color(0xFFf1c40f)
+                              ])),
+                        ),
+                      ),
+                      Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: RaisedButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(
+                                        Icons.add,
+                                        color: Colors.white,
+                                      ),
+                                      Text(
+                                        'ADD FUNDS',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize:
+                                                SizeConfig.blockSizeHorizontal *
+                                                    3.3),
                                       ),
                                     ],
                                   ),
-                                  buttons: [
-                                    DialogButton(
-                                      onPressed: () => {
-                                        openCheckout("payment"),
-                                        Navigator.pop(context)
-                                      },
-                                      child: Text(
-                                        "ADD",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 20),
+                                ),
+                                color: Color(0xFF4cb050),
+                                onPressed: () {
+                                  // popup for entering the amount
+                                  Alert(
+                                      context: context,
+                                      title: "DEPOSIT",
+                                      content: Column(
+                                        children: <Widget>[
+                                          TextField(
+                                            controller: textEditingController,
+                                            keyboardType: TextInputType.number,
+                                            decoration: InputDecoration(
+                                              icon:
+                                                  Text("\u20B9"), // rupee icon
+                                              labelText: 'Amount',
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    )
-                                  ]).show();
-                            },
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        Expanded(
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Icon(
-                                  Icons.refresh,
-                                  color: Colors.white,
-                                ),
-                                Text(
-                                  'WITHDRAW',
-                                  style: TextStyle(
+                                      buttons: [
+                                        DialogButton(
+                                          onPressed: () {
+                                            int amount = int.parse(
+                                                textEditingController.text);
+                                            if (amount < 0) {
+                                              print('zero');
+                                            } else {
+                                              openCheckout("payment");
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                          child: Text(
+                                            "ADD",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20),
+                                          ),
+                                        )
+                                      ]).show();
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              child: RaisedButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Icon(
+                                      Icons.refresh,
                                       color: Colors.white,
-                                      fontSize:
-                                          SizeConfig.blockSizeHorizontal * 3.3),
+                                    ),
+                                    Text(
+                                      'WITHDRAW',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize:
+                                              SizeConfig.blockSizeHorizontal *
+                                                  3.3),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            color: Color(0xFF4185f4),
-                            onPressed: () {
-                              List walletHistory =
-                                  widget.currentUser["walletHistory"];
-                              print(walletHistory);
-                              withdrawAmount();
-                            },
-                          ),
-                        )
-                      ],
-                    ),
+                                color: Color(0xFF4185f4),
+                                onPressed: () {
+                                  List walletHistory =
+                                      widget.currentUser["walletHistory"];
+                                  print(walletHistory);
+                                  withdrawAmount();
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          'Wallet History',
+                          style: TextStyle(fontSize: 22),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                            child: (() {
+                          if (walletHistoryQueryResults.length == 0) {
+                            return Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.only(
+                                  top: SizeConfig.blockSizeVertical * 13),
+                              child: Text(
+                                'No transaction has been done.',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontFamily: 'Montserrat',
+                                  fontWeight: FontWeight.w100,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return WalletHistory(
+                                walletHistory: walletHistoryQueryResults);
+                          }
+                        }())),
+                      ),
+                    ],
                   ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Wallet History',
-                      style: TextStyle(fontSize: 22),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    alignment: Alignment.topLeft,
-                    child: Container(
-                        child: (() {
-                      if (walletHistoryQueryResults.length == 0) {
-                        return Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.only(
-                              top: SizeConfig.blockSizeVertical * 13),
-                          child: Text(
-                            'No transaction has been done.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontFamily: 'Montserrat',
-                              fontWeight: FontWeight.w100,
-                            ),
-                          ),
-                        );
-                      } else {
-                        return WalletHistory(
-                            walletHistory: walletHistoryQueryResults);
-                      }
-                    }())),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ));
+            );
+          }
+        }()));
   }
 }
